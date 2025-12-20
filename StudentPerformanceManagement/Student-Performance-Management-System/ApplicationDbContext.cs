@@ -10,7 +10,8 @@ namespace Student_Performance_Management_System
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
 
-       
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Staff> Staffs { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
