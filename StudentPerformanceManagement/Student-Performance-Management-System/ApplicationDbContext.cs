@@ -13,6 +13,9 @@ namespace Student_Performance_Management_System
         public DbSet<Student> Students { get; set; }
         public DbSet<Staff> Staffs { get; set; }
 
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<CourseGroup> CourseGroups { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
