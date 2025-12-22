@@ -10,10 +10,10 @@
 
         // Store the only in db and actually image store in wwwroot
         public string ProfileImagePath {  get; set; }
-        public int CourseID { get; set; }
+        public int CourseId { get; set; }
         public Course Course { get; set; }
         public int CourseGroupId { get; set; }
-        public CourseGroup courseGroup { get; set; }
+        public CourseGroup CourseGroup { get; set; }
         public string AppUserId { get; set; }
         public AppUser AppUser { get; set; }
     }
