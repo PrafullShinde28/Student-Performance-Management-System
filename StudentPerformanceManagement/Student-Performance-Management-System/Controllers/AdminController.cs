@@ -65,5 +65,52 @@ namespace Student_Performance_Management_System.Controllers
 
             return View();
         }
-    }
+        // ADD STAFF (GET)
+        [HttpGet]
+        public IActionResult AddStaff()
+        {
+            return View();
+        }
+
+        // ADD STAFF (POST)
+        [HttpPost]
+        public async Task<IActionResult> AddStaff(string name, string email, string mno)
+        {
+            var user = new AppUser
+            {
+                UserName = email,
+                Email = email,
+                FullName = name,
+                EmailConfirmed = true
+            };
+            string pass = "Staff@123";
+
+            var result = await _userManager.CreateAsync(user, pass);
+
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "Staff");
+
+                var staff = new Staff
+                {
+                    Name = name,
+                    Email = email,
+                    MobileNo = mno,
+                    Password = pass,
+                    AppUserId = user.Id
+                };
+
+                _context.Staffs.Add(staff);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Dashboard", "Account");
+            }
+
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
+
+            return View();
+        }
+
+        }
 }

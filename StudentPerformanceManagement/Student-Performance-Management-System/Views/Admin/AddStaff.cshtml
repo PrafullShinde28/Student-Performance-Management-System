@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewData["Title"] = "AddStaff";
+}
+
+<h1>AddStaff</h1>
+
+<form method="post">
+    <label>Name</label><br />
+    <input type="text" name="name" required /><br /><br />
+
+    <label>Email</label><br />
+    <input type="email" name="email" required /><br /><br />
+
+    <label>Mobile Number</label><br />
+    <input type="number" name="mno" required /><br /><br />
+
+
+    <button type="submit">Enroll</button>
+</form>
+
+@foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+{
+    <p style="color:red">@error.ErrorMessage</p>
+}
