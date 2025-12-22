@@ -7,6 +7,9 @@
         public string Name { get; set; }
         public string? Email { get; set; }
         public string? MobileNo { get; set; }
+
+        // Store the only in db and actually image store in wwwroot
+        public string ProfileImagePath {  get; set; }
         public int CourseID { get; set; }
         public Course Course { get; set; }
         public int CourseGroupId { get; set; }
