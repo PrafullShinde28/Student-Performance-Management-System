@@ -59,5 +59,6 @@ namespace Student_Performance_Management_System.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
+
     }
 }
