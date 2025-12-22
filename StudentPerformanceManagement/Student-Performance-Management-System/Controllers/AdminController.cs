@@ -8,12 +8,15 @@ namespace Student_Performance_Management_System.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _db;
+
 
         public AdminController(UserManager<AppUser> userManager,
-                               ApplicationDbContext context)
+                               ApplicationDbContext context, ApplicationDbContext db)
         {
             _userManager = userManager;
             _context = context;
+            _db = db;
         }
         public IActionResult Index()
         {
@@ -27,14 +30,41 @@ namespace Student_Performance_Management_System.Controllers
             return View();
         }
 
+
+        public string GeneratePRN()
+        {
+            //int year = DateTime.Now.Year;
+            int year = 2026;
+            string basePart = year + "1000";
+
+            var lastPRN = _db.Students
+                            .OrderByDescending(s => s.PRN)
+                            .Select(s => s.PRN)
+                            .FirstOrDefault();
+
+            if (lastPRN == null)
+            {
+                return basePart + "0001";
+            }
+            else
+            {
+                string last = lastPRN.Substring(basePart.Length);
+                int next = int.Parse(last) + 1;
+
+                return basePart + next.ToString("D4");
+            }
+        }
+
+
         // ENROLL STUDENT (POST)
         [HttpPost]
-        public async Task<IActionResult> EnrollStudent(string name, string email)
+        public async Task<IActionResult> EnrollStudent(string name, string email, string mobileno, int courseid, int coursegroupid)
         {
             string defaultPassword = "Student@123";
 
             var user = new AppUser
             {
+
                 UserName = email,
                 Email = email,
                 FullName = name,
@@ -49,9 +79,16 @@ namespace Student_Performance_Management_System.Controllers
 
                 var student = new Student
                 {
+                    PRN = GeneratePRN(),
+                    ProfileImagePath = "default.png",
                     Name = name,
                     Email = email,
-                    AppUserId = user.Id
+                    AppUserId = user.Id,
+                    MobileNo = mobileno,
+                    CourseId = courseid,
+                    CourseGroupId = coursegroupid,
+
+
                 };
 
                 _context.Students.Add(student);
