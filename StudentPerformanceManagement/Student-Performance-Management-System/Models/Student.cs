@@ -14,6 +14,8 @@
         public Course Course { get; set; }
         public int CourseGroupId { get; set; }
         public CourseGroup CourseGroup { get; set; }
+
+        public ICollection<Marks> Marks { get; set; } = new List<Marks>();
         public string AppUserId { get; set; }
         public AppUser AppUser { get; set; }
     }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Student_Performance_Management_System;
 
@@ -11,9 +12,11 @@ using Student_Performance_Management_System;
 namespace Student_Performance_Management_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251224032018_removed unique index(mark-subjectId)")]
+    partial class removeduniqueindexmarksubjectId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -297,9 +300,6 @@ namespace Student_Performance_Management_System.Migrations
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TasksId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TheoryMarks")
                         .HasColumnType("int");
 
@@ -308,8 +308,6 @@ namespace Student_Performance_Management_System.Migrations
                     b.HasIndex("StudentId");
 
                     b.HasIndex("SubjectId");
-
-                    b.HasIndex("TasksId");
 
                     b.ToTable("Marks");
                 });
@@ -538,7 +536,7 @@ namespace Student_Performance_Management_System.Migrations
             modelBuilder.Entity("Student_Performance_Management_System.Models.Marks", b =>
                 {
                     b.HasOne("Student_Performance_Management_System.Models.Student", "Student")
-                        .WithMany("Marks")
+                        .WithMany()
                         .HasForeignKey("StudentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -549,17 +547,9 @@ namespace Student_Performance_Management_System.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Student_Performance_Management_System.Models.Tasks", "Tasks")
-                        .WithMany()
-                        .HasForeignKey("TasksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Student");
 
                     b.Navigation("Subject");
-
-                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("Student_Performance_Management_System.Models.Staff", b =>
@@ -658,11 +648,6 @@ namespace Student_Performance_Management_System.Migrations
             modelBuilder.Entity("Student_Performance_Management_System.Models.CourseGroup", b =>
                 {
                     b.Navigation("Students");
-                });
-
-            modelBuilder.Entity("Student_Performance_Management_System.Models.Student", b =>
-                {
-                    b.Navigation("Marks");
                 });
 
             modelBuilder.Entity("Student_Performance_Management_System.Models.Subject", b =>

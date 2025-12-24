@@ -11,6 +11,9 @@
 
         public Subject Subject { get; set; } = null;
 
+        public int TasksId {  get; set; }
+        public Tasks Tasks {  get; set; }
+
         public int TheoryMarks { get; set; }
         public int LabMarks { get; set; }
 
