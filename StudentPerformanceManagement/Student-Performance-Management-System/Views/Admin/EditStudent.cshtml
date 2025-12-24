@@ -1,5 +1,93 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Student
+
 @{
+    ViewData["Title"] = "Edit Student";
+    Layout = "_AdminLayout";
 }
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-semibold text-primary">
+            <i class="bi bi-pencil-square"></i> Edit Student
+        </h4>
+
+        <a asp-action="Students" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-body p-4">
+
+                    <form asp-action="EditStudent" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Hidden Fields -->
+                        <input type="hidden" asp-for="StudentId" />
+                        <input type="hidden" asp-for="AppUserId" />
+
+                        <!-- PRN -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">PRN</label>
+                            <input asp-for="PRN" class="form-control" readonly />
+                        </div>
+
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Name</label>
+                            <input asp-for="Name" class="form-control" required />
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input asp-for="Email" class="form-control" readonly />
+                        </div>
+
+                        <!-- Mobile -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Mobile Number</label>
+                            <input asp-for="MobileNo" class="form-control" required />
+                        </div>
+
+                        <!-- Course ID -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Course ID</label>
+                            <input asp-for="CourseId" class="form-control" required />
+                        </div>
+
+                        <!-- Course Group ID -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Course Group ID</label>
+                            <input asp-for="CourseGroupId" class="form-control" required />
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save"></i> Update
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Validation Errors -->
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div class="alert alert-danger py-1 px-2 mt-2 small">
+                            @error.ErrorMessage
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

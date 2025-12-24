@@ -1,6 +1,18 @@
-﻿namespace Student_Performance_Management_System.ViewModel
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+
+namespace Student_Performance_Management_System.ViewModel
 {
     public class StudentEnrollmentViewModel
     {
+        [Required(ErrorMessage = "Please select a course")]
+        public int CourseId { get; set; }
+
+        [Required(ErrorMessage = "Please select a course group")]
+        public int CourseGroupId { get; set; }
+
+        public List<SelectListItem> Courses { get; set; } = new();
+        public List<SelectListItem> CourseGroups { get; set; } = new();
     }
+
 }

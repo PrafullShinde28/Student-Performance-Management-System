@@ -1,31 +1,71 @@
-﻿<h2>Enroll Student</h2>
+﻿@model Student_Performance_Management_System.ViewModel.StudentEnrollmentViewModel
 
-<form method="post">
-    <label>Name</label><br />
-    <input type="text" name="name" required /><br /><br />
-
-    <label>Email</label><br />
-    <input type="email" name="email" required /><br /><br />
-
-    <label>MobileNo</label><br />
-    <input type="text" name="mobileno" required /><br /><br />
-
-    <label>CourseId</label><br />
-    <input type="number" name="courseid" required /><br /><br />
-
-    <label>CourseGroupId</label><br />
-    <input type="number" name="coursegroupid" required /><br /><br />
-
-
-
-    <p>Default Password: <b>Student@123</b></p>
-
-    <button type="submit">Enroll</button>
-</form>
-
-@foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-{
-    <p style="color:red">@error.ErrorMessage</p>
+@{
+    ViewData["Title"] = "Enroll Student";
+    Layout = "_AdminLayout";
 }
 
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
 
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0 fw-semibold">Enroll Student</h5>
+                </div>
+
+                <div class="card-body">
+                    <form method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Mobile Number</label>
+                            <input type="text" name="mobileno" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Course</label>
+                            <select asp-for="CourseId" asp-items="Model.Courses" class="form-select">
+                                <option value="">-- Select Course --</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Course Group</label>
+                            <select asp-for="CourseGroupId" asp-items="Model.CourseGroups" class="form-select">
+                                <option value="">-- Select Course Group --</option>
+                            </select>
+                        </div>
+
+
+                        <div class="alert alert-secondary small">
+                            Default Password: <strong>Student@123</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus"></i> Enroll
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Validation Errors -->
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div class="text-danger small mt-2">@error.ErrorMessage</div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
