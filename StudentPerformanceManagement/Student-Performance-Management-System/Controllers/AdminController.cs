@@ -212,6 +212,15 @@ namespace Student_Performance_Management_System.Controllers
             return View(model);
         }
 
+        // Staff
+        public IActionResult Staff()
+        {
+            var staffs = _context.Staffs.ToList();
+            return View(staffs);
+        }
+
+
+
         // ADD STAFF (GET)
         [HttpGet]
         public IActionResult AddStaff()
@@ -221,8 +230,12 @@ namespace Student_Performance_Management_System.Controllers
 
         // ADD STAFF (POST)
         [HttpPost]
-        public async Task<IActionResult> AddStaff(string name, string email, string mno)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddStaff(string name, string email, string mobileNo)
         {
+            // 1️⃣ Create Identity User FIRST (temporary password)
+            var tempPassword = "Temp@123";
+
             var user = new AppUser
             {
                 UserName = email,
@@ -230,33 +243,98 @@ namespace Student_Performance_Management_System.Controllers
                 FullName = name,
                 EmailConfirmed = true
             };
-            string pass = "Staff@123";
 
-            var result = await _userManager.CreateAsync(user, pass);
+            var result = await _userManager.CreateAsync(user, tempPassword);
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                await _userManager.AddToRoleAsync(user, "Staff");
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
 
-                var staff = new Staff
-                {
-                    Name = name,
-                    Email = email,
-                    MobileNo = mno,
-                    AppUserId = user.Id
-                };
-
-                _context.Staffs.Add(staff);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction("Dashboard", "Account");
+                return View();
             }
 
-            foreach (var error in result.Errors)
-                ModelState.AddModelError("", error.Description);
+            await _userManager.AddToRoleAsync(user, "Staff");
 
-            return View();
+            // 2️⃣ Create Staff WITH AppUserId (NOT NULL satisfied)
+            var staff = new Staff
+            {
+                Name = name,
+                Email = email,
+                MobileNo = mobileNo,
+                AppUserId = user.Id   // 🔥 important
+            };
+
+            _context.Staffs.Add(staff);
+            await _context.SaveChangesAsync();   // 🔥 StaffId generated here
+
+            // 3️⃣ Generate final password using StaffId
+            string finalPassword = $"{staff.StaffId}@Sunbeam";
+
+            // 4️⃣ Change password WITHOUT TOKENS
+            await _userManager.RemovePasswordAsync(user);
+            await _userManager.AddPasswordAsync(user, finalPassword);
+
+            TempData["Success"] = $"Staff added. Default Password: {finalPassword}";
+            return RedirectToAction("Staff");
         }
+
+        [HttpGet]
+        public IActionResult EditStaff(int id)
+        {
+            var staff = _context.Staffs
+                .Include(s => s.Tasks)
+                .FirstOrDefault(s => s.StaffId == id);
+
+            if (staff == null)
+                return NotFound();
+
+            return View(staff);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditStaff(Staff model)
+        {
+            var staff = _context.Staffs
+                .Include(s => s.Tasks)
+                .FirstOrDefault(s => s.StaffId == model.StaffId);
+
+            if (staff == null)
+                return NotFound();
+
+            staff.Name = model.Name;
+            staff.MobileNo = model.MobileNo;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Staff");
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteStaff(int id)
+        {
+            var staff = _context.Staffs.FirstOrDefault(s => s.StaffId == id);
+            if (staff == null)
+                return NotFound();
+
+            var user = await _userManager.FindByIdAsync(staff.AppUserId);
+
+            _context.Staffs.Remove(staff);
+            await _context.SaveChangesAsync();
+
+            if (user != null)
+                await _userManager.DeleteAsync(user);
+
+            return RedirectToAction("Staff");
+        }
+
+
+
 
         //Edit course
         [HttpGet]
