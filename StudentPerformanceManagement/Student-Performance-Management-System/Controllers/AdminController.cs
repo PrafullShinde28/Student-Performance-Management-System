@@ -233,7 +233,7 @@ namespace Student_Performance_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddStaff(string name, string email, string mobileNo)
         {
-            // 1️⃣ Create Identity User FIRST (temporary password)
+            
             var tempPassword = "Temp@123";
 
             var user = new AppUser
@@ -256,22 +256,22 @@ namespace Student_Performance_Management_System.Controllers
 
             await _userManager.AddToRoleAsync(user, "Staff");
 
-            // 2️⃣ Create Staff WITH AppUserId (NOT NULL satisfied)
+            
             var staff = new Staff
             {
                 Name = name,
                 Email = email,
                 MobileNo = mobileNo,
-                AppUserId = user.Id   // 🔥 important
+                AppUserId = user.Id   
             };
 
             _context.Staffs.Add(staff);
-            await _context.SaveChangesAsync();   // 🔥 StaffId generated here
+            await _context.SaveChangesAsync();   
 
-            // 3️⃣ Generate final password using StaffId
+            
             string finalPassword = $"{staff.StaffId}@Sunbeam";
 
-            // 4️⃣ Change password WITHOUT TOKENS
+            
             await _userManager.RemovePasswordAsync(user);
             await _userManager.AddPasswordAsync(user, finalPassword);
 
@@ -399,7 +399,7 @@ namespace Student_Performance_Management_System.Controllers
 
         // ADD COURSE (GET)
         [HttpGet]
-        public IActionResult CreateCourse()
+        public IActionResult AddCourse()
         {
             return View();
         }
@@ -407,7 +407,7 @@ namespace Student_Performance_Management_System.Controllers
         // ADD COURSE (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateCourse(Course course)
+        public IActionResult AddCourse(Course course)
         {
             if (!ModelState.IsValid)
                 return View(course);
@@ -454,7 +454,7 @@ namespace Student_Performance_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditSubjects(int id, SubjectCreateVM vm)
         {
-            ModelState.Remove(nameof(vm.CourseList));   // 🔥 critical
+            ModelState.Remove(nameof(vm.CourseList));   
 
             if (!ModelState.IsValid)
             {
@@ -518,7 +518,7 @@ namespace Student_Performance_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddSubjects(SubjectCreateVM vm)
         {
-            ModelState.Remove(nameof(vm.CourseList)); // 👈 IMPORTANT SAFETY LINE
+            ModelState.Remove(nameof(vm.CourseList)); 
 
             if (!ModelState.IsValid)
             {

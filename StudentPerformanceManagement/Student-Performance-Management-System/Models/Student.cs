@@ -1,4 +1,6 @@
-﻿namespace Student_Performance_Management_System.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Student_Performance_Management_System.Models
 {
     public class Student
     {
@@ -6,6 +8,8 @@
         public string PRN { get; set; }
         public string Name { get; set; }
         public string? Email { get; set; }
+
+        [MaxLength(10)]
         public string? MobileNo { get; set; }
 
         // Store the only in db and actually image store in wwwroot

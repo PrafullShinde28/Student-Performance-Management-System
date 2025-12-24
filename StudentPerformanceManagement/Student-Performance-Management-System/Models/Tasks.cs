@@ -7,6 +7,18 @@
         public int StaffId { get; set; }
         public Staff Staff { get; set; }
 
+        public string Title { get; set; }
+        public string Description { get; set; }
+
+        public enum TaskStatus
+        {
+            Pending,
+            Completed,
+            Incomplete
+        }
+
+        public TaskStatus Status { get; set; }
+
         public int CourseId { get; set; }
         public Course Course { get; set; }
 
