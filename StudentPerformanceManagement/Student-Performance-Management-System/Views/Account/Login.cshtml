@@ -1,16 +1,71 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Login";
 }
 
-<h1>Login</h1>
-<form method="post">
-    <label>Email</label><br />
-    <input type="email" name="email" required /><br /><br />
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5; /* slight grey so white card stands out */
+        margin: 0;
+        padding: 0;
+    }
 
-    <label>Password</label><br />
-    <input type="password" name="password" required /><br /><br />
+    .login-container {
+        width: 350px;
+        margin: 80px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.08);
+    }
 
-    <button type="submit">Login</button>
-</form>
+    h1 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-weight: 600;
+    }
 
+    label {
+        font-size: 14px;
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 18px;
+        font-size: 14px;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+        button:hover {
+            background: #0056b3;
+        }
+</style>
+
+<div class="login-container">
+    <h1>Login</h1>
+    <form method="post">
+        <label>Email</label>
+        <input type="email" name="email" required />
+
+        <label>Password</label>
+        <input type="password" name="password" required />
+
+        <button type="submit">Login</button>
+    </form>
+</div>
