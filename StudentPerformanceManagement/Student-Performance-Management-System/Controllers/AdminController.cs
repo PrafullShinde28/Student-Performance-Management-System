@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Student_Performance_Management_System.Models;
 using Student_Performance_Management_System.ViewModel;
 
@@ -340,5 +341,130 @@ namespace Student_Performance_Management_System.Controllers
             return RedirectToAction("Courses");
         }
 
+        public IActionResult Subjects()
+        {
+            var subjects = _context.Subjects
+                            .Include(s => s.Course)
+                            .ToList();
+
+            return View(subjects);
+        }
+
+        [HttpGet]
+        public IActionResult EditSubjects(int id)
+        {
+            var subject = _context.Subjects.Find(id);
+            if (subject == null) return NotFound();
+
+            var vm = new SubjectCreateVM
+            {
+                SubjectName = subject.SubjectName,
+                CourseId = subject.CourseId,
+                CourseList = _context.Courses
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.CourseId.ToString(),
+                        Text = c.CourseName
+                    }).ToList()
+            };
+
+            ViewBag.SubjectId = subject.SubjectId;
+            return View(vm);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditSubjects(int id, SubjectCreateVM vm)
+        {
+            ModelState.Remove(nameof(vm.CourseList));   // 🔥 critical
+
+            if (!ModelState.IsValid)
+            {
+                vm.CourseList = _context.Courses
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.CourseId.ToString(),
+                        Text = c.CourseName
+                    }).ToList();
+
+                return View(vm);
+            }
+
+            var subject = _context.Subjects.Find(id);
+            if (subject == null) return NotFound();
+
+            subject.SubjectName = vm.SubjectName;
+            subject.CourseId = vm.CourseId;
+
+            _context.SaveChanges();
+            return RedirectToAction("Subjects");
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteSubjects(int id)
+        {
+            var subject = _context.Subjects.FirstOrDefault(s => s.SubjectId == id);
+
+            if (subject == null)
+                return NotFound();
+
+            _context.Subjects.Remove(subject);
+            _context.SaveChanges();
+
+            return RedirectToAction("Subjects");
+        }
+
+
+
+
+        [HttpGet]
+        public IActionResult AddSubjects()
+        {
+            var vm = new SubjectCreateVM
+            {
+                CourseList = _context.Courses
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.CourseId.ToString(),
+                        Text = c.CourseName
+                    }).ToList()
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddSubjects(SubjectCreateVM vm)
+        {
+            ModelState.Remove(nameof(vm.CourseList)); // 👈 IMPORTANT SAFETY LINE
+
+            if (!ModelState.IsValid)
+            {
+                vm.CourseList = _context.Courses
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.CourseId.ToString(),
+                        Text = c.CourseName
+                    }).ToList();
+
+                return View(vm);
+            }
+
+            var subject = new Subject
+            {
+                SubjectName = vm.SubjectName,
+                CourseId = vm.CourseId
+            };
+
+            _context.Subjects.Add(subject);
+            _context.SaveChanges();
+
+            return RedirectToAction("Subjects");
+        }
     }
 }
