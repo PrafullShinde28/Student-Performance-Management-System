@@ -243,7 +243,6 @@ namespace Student_Performance_Management_System.Controllers
                     Name = name,
                     Email = email,
                     MobileNo = mno,
-                    Password = pass,
                     AppUserId = user.Id
                 };
 
