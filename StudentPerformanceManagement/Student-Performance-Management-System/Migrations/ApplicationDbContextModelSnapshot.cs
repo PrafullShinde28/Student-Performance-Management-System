@@ -249,7 +249,7 @@ namespace Student_Performance_Management_System.Migrations
 
                     b.HasKey("CourseId");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("Student_Performance_Management_System.Models.CourseGroup", b =>
@@ -274,7 +274,7 @@ namespace Student_Performance_Management_System.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("CourseGroups");
+                    b.ToTable("CourseGroups", (string)null);
                 });
 
             modelBuilder.Entity("Student_Performance_Management_System.Models.Marks", b =>
@@ -311,7 +311,7 @@ namespace Student_Performance_Management_System.Migrations
 
                     b.HasIndex("TasksId");
 
-                    b.ToTable("Marks");
+                    b.ToTable("Marks", (string)null);
                 });
 
             modelBuilder.Entity("Student_Performance_Management_System.Models.Staff", b =>
@@ -345,7 +345,7 @@ namespace Student_Performance_Management_System.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("Staffs");
+                    b.ToTable("Staffs", (string)null);
                 });
 
             modelBuilder.Entity("Student_Performance_Management_System.Models.Student", b =>
@@ -393,7 +393,7 @@ namespace Student_Performance_Management_System.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("Student_Performance_Management_System.Models.Subject", b =>
@@ -431,7 +431,7 @@ namespace Student_Performance_Management_System.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subjects", (string)null);
                 });
 
             modelBuilder.Entity("Student_Performance_Management_System.Models.Tasks", b =>
@@ -486,7 +486,7 @@ namespace Student_Performance_Management_System.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("Tasks", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

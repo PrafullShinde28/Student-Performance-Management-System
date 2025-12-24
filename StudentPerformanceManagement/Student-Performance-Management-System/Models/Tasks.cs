@@ -1,5 +1,11 @@
 ﻿namespace Student_Performance_Management_System.Models
 {
+    public enum Status
+    {
+        Pending = 0,
+        Completed = 1,
+        Overdue = 2
+    }
     public class Tasks
     {
         public int TasksId { get; set; }
@@ -9,16 +15,7 @@
 
         public string Title { get; set; }
         public string Description { get; set; }
-
-        public enum TaskStatus
-        {
-            Pending,
-            Completed,
-            Incomplete
-        }
-
-        public TaskStatus Status { get; set; }
-
+        public  Status Status{ get; set; }
         public int CourseId { get; set; }
         public Course Course { get; set; }
 

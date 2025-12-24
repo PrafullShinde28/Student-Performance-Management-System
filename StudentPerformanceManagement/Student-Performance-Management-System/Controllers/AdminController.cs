@@ -543,5 +543,49 @@ namespace Student_Performance_Management_System.Controllers
 
             return RedirectToAction("Subjects");
         }
+
+
+
+        #region tasks
+        public IActionResult Tasks()
+        {
+            var tlist = _db.Tasks.Include(t => t.Course).Include(t => t.Subject).Include(t => t.CourseGroup).Include(t => t.Staff).ToList();
+            return View(tlist);
+        }
+
+        [HttpGet]
+        public IActionResult AddTask()
+        {
+
+            var data = new AddTasksViewModel
+            {
+                Courses = _db.Courses.Select(c => new SelectListItem { Value = c.CourseId.ToString(), Text = c.CourseName }).ToList(),
+                CourseGroups = _db.CourseGroups.Select(c => new SelectListItem { Value = c.CourseGroupId.ToString(), Text = c.GroupName }).ToList(),
+                Subjects = _db.Subjects.Select(s => new SelectListItem { Value = s.SubjectId.ToString(), Text = s.SubjectName }).ToList(),
+                Staffs = _db.Staffs.Select(s => new SelectListItem { Value = s.StaffId.ToString(), Text = s.Name }).ToList()
+            };
+            return View(data);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddTask(AddTask t)
+        {
+            var task = new Tasks()
+            {
+                Title = t.Title,
+                Description = t.Description,
+                StaffId = t.StaffId,
+                CourseId = t.CourseId,
+                SubjectId = t.SubjectId,
+                CourseGroupId = t.CourseGroupId,
+                ValidFrom = t.ValidFrom,
+                ValidTo = t.ValidTo,
+                Status = Status.Pending
+            };
+            _db.Tasks.Add(task);
+            await _db.SaveChangesAsync();
+            return RedirectToAction("Tasks", "Admin");
+        }
+        #endregion
     }
 }
