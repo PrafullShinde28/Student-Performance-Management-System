@@ -31,7 +31,8 @@ namespace Student_Performance_Management_System.Controllers
         }
         public IActionResult Courses()
         {
-            return View();
+            var courses = _context.Courses.ToList();
+            return View(courses);
         }
 
 
@@ -257,5 +258,87 @@ namespace Student_Performance_Management_System.Controllers
             return View();
         }
 
+        //Edit course
+        [HttpGet]
+        public IActionResult EditCourse(int id)
+        {
+            var course = _context.Courses.FirstOrDefault(c => c.CourseId == id);
+
+            if (course == null)
+                return NotFound();
+
+            return View(course);
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditCourse(Course model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var course = _context.Courses.FirstOrDefault(c => c.CourseId == model.CourseId);
+
+            if (course == null)
+                return NotFound();
+
+            course.CourseName = model.CourseName;
+            course.Description = model.Description;
+            course.Duration = model.Duration;
+            course.Fees = model.Fees;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Courses");
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteCourse(int id)
+        {
+            var course = _context.Courses.Find(id);
+
+            if (course == null)
+                return NotFound();
+
+            bool hasStudents = _context.Students.Any(s => s.CourseId == id);
+
+            if (hasStudents)
+            {
+                TempData["Error"] = "Cannot delete course. Students are already enrolled.";
+                return RedirectToAction("Courses");
+            }
+
+            _context.Courses.Remove(course);
+            _context.SaveChanges();
+
+            TempData["Success"] = "Course deleted successfully.";
+            return RedirectToAction("Courses");
+        }
+
+        // ADD COURSE (GET)
+        [HttpGet]
+        public IActionResult CreateCourse()
+        {
+            return View();
+        }
+
+        // ADD COURSE (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateCourse(Course course)
+        {
+            if (!ModelState.IsValid)
+                return View(course);
+
+            _context.Courses.Add(course);
+            _context.SaveChanges();
+
+            return RedirectToAction("Courses");
+        }
+
+    }
 }
