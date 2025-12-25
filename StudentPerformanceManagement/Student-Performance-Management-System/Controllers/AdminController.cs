@@ -30,10 +30,14 @@ namespace Student_Performance_Management_System.Controllers
 
         public IActionResult Students()
         {
-            var students = _context.Students.ToList();
+            var students = _context.Students
+                .Include(s => s.Course)
+                .Include(s => s.CourseGroup)
+                .ToList();
+
             return View(students);
         }
-        
+
 
 
         [HttpGet]

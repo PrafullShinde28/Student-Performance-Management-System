@@ -45,8 +45,8 @@
                                 <td>@student.PRN</td>
                                 <td>@student.Name</td>
                                 <td>@student.Email</td>
-                                <td>@student.Course?.CourseName</td>
-                                <td>@student.CourseGroup?.GroupName</td>
+                                <td>@(student.Course?.CourseName ?? "N/A")</td>
+                                <td>@(student.CourseGroup?.GroupName ?? "N/A")</td>
                                 <td>@student.MobileNo</td>
                                 <td class="text-center">
 
