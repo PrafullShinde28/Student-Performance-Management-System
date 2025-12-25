@@ -1,23 +1,12 @@
-﻿
+﻿@model Student_Performance_Management_System.ViewModel.DashboardViewModel
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Dashboard";
 }
-@model Student_Performance_Management_System.ViewModel.DashboardViewModel
 
 <div class="row g-4">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white border-0 shadow-sm">
-            <div class="card-body d-flex justify-content-between align-items-center p-4">
-                <div>
-                    <h6 class="mb-1 text-white-50">Total Courses</h6>
-                    <h2 class="fw-bold mb-0">@Model.TotalCourses</h2>
-                </div>
-                <i class="bi bi-book fs-1 opacity-50"></i>
-            </div>
-        </div>
-    </div>
 
+    <!-- Total Students -->
     <div class="col-md-3">
         <div class="card bg-success text-white border-0 shadow-sm">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
@@ -30,6 +19,46 @@
         </div>
     </div>
 
+    <!-- Total Staff -->
+    <div class="col-md-3">
+        <div class="card bg-info text-white border-0 shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <h6 class="mb-1 text-white-50">Total Staff</h6>
+                    <h2 class="fw-bold mb-0">@Model.TotalStaff</h2>
+                </div>
+                <i class="bi bi-person-badge fs-1 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Courses -->
+    <div class="col-md-3">
+        <div class="card bg-primary text-white border-0 shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <h6 class="mb-1 text-white-50">Total Courses</h6>
+                    <h2 class="fw-bold mb-0">@Model.TotalCourses</h2>
+                </div>
+                <i class="bi bi-book fs-1 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Course Groups -->
+    <div class="col-md-3">
+        <div class="card bg-danger text-white border-0 shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <h6 class="mb-1 text-white-50">Total Course Groups</h6>
+                    <h2 class="fw-bold mb-0">@Model.TotalGroups</h2>
+                </div>
+                <i class="bi bi-list-task fs-1 opacity-50"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Subjects -->
     <div class="col-md-3">
         <div class="card bg-warning text-dark border-0 shadow-sm">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
@@ -42,26 +71,17 @@
         </div>
     </div>
 
+    <!-- Total Tasks -->
     <div class="col-md-3">
         <div class="card bg-danger text-white border-0 shadow-sm">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <h6 class="mb-1 text-white-50">Tasks Assigned</h6>
+                    <h6 class="mb-1 text-white-50">Total Tasks Assigned</h6>
                     <h2 class="fw-bold mb-0">@Model.TotalTasks</h2>
                 </div>
                 <i class="bi bi-list-task fs-1 opacity-50"></i>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-danger text-white border-0 shadow-sm">
-            <div class="card-body d-flex justify-content-between align-items-center p-4">
-                <div>
-                    <h6 class="mb-1 text-white-50">Total Course Groups</h6>
-                    <h2 class="fw-bold mb-0">@Model.TotalGroups</h2>
-                </div>
-                <i class="bi bi-list-task fs-1 opacity-50"></i>
-            </div>
-        </div>
-    </div>
+
 </div>
