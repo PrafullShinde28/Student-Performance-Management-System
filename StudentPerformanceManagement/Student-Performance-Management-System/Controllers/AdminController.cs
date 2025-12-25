@@ -629,6 +629,33 @@ namespace Student_Performance_Management_System.Controllers
             await _db.SaveChangesAsync();
             return RedirectToAction("Tasks", "Admin");
         }
+        public IActionResult GetSubjectsByCourse(int courseId)
+        {
+            var subjects = _context.Subjects
+        .Where(s => s.CourseId == courseId)
+        .Select(s => new
+        {
+            subjectId = s.SubjectId,
+            subjectName = s.SubjectName
+        })
+        .ToList();
+
+            return Json(subjects);
+        }
+
+        public IActionResult GetGroupsByCourse(int courseId)
+        {
+            var subjects = _context.CourseGroups
+        .Where(s => s.CourseId == courseId)
+        .Select(s => new
+        {
+            courseGroupId = s.CourseGroupId,
+            groupName = s.GroupName
+        })
+        .ToList();
+
+            return Json(subjects);
+        }
         #endregion
     }
 }
