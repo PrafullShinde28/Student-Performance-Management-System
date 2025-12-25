@@ -6,13 +6,18 @@
 <div class="container-fluid">
 
     <!-- Page Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-semibold">Tasks</h4>
+    <div class="d-flex justify-content-between align-items-center mb-4 px-3 py-3 bg-white rounded shadow-sm border">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-list-task fs-4 text-primary"></i>
+            <h4 class="fw-semibold mb-0">Tasks</h4>
+        </div>
 
-        <a asp-action="AddTask" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Add Task
+        <a asp-action="AddTask" class="btn btn-primary d-flex align-items-center gap-2 px-4">
+            <i class="bi bi-plus-circle"></i>
+            <span>Add Task</span>
         </a>
     </div>
+
 
     <!-- task Table -->
     <div class="card shadow-sm">
@@ -21,7 +26,7 @@
                 <thead class="table-light">
 
                     <tr>
-                        <th>Id</th>
+                        <th hidden>Id</th>
                         <th>Title</th>
                         @* <th>Description</th> *@
                         <th>Assigned To</th>
@@ -39,7 +44,7 @@
                     @foreach (var item in Model)
                     {
                         <tr>
-                            <td>@item.TasksId</td>
+                            <td hidden>@item.TasksId</td>
                             <td>@item.Title</td>
                            @* <td>@item.Description</td> *@
                             <td>@item.Staff.Name</td>

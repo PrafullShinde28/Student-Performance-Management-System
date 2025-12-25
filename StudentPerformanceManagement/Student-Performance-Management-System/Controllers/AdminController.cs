@@ -814,6 +814,7 @@ namespace Student_Performance_Management_System.Controllers
             var t = _db.Tasks.Find(id);
             ViewBag.TaskTitle = t.Title;
             ViewBag.Description = t.Description;
+            ViewBag.Id = t.TasksId;
             var data = new AddTasksViewModel
             {
                 Courses = _db.Courses.Select(c => new SelectListItem { Value = c.CourseId.ToString(), Text = c.CourseName }).ToList(),
@@ -825,29 +826,27 @@ namespace Student_Performance_Management_System.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditTask(AddTask t)
+        public async Task<IActionResult> EditTask(EditTaskVM t)
         {
-            var task = new Tasks()
-            {
-                Title = t.Title,
-                Description = t.Description,
-                StaffId = t.StaffId,
-                CourseId = t.CourseId,
-                SubjectId = t.SubjectId,
-                CourseGroupId = t.CourseGroupId,
-                ValidFrom = t.ValidFrom,
-                ValidTo = t.ValidTo,
-                Status = Status.Pending
-            };
-            _db.Tasks.Add(task);
+            var tsk = _db.Tasks.Find(t.Id);
+            tsk.Title = t.Title;
+            tsk.Description = t.Description;
+            tsk.CourseGroupId = t.CourseGroupId;
+            tsk.SubjectId = t.SubjectId;
+            tsk.StaffId = t.StaffId;
+            tsk.CourseId = t.CourseId;
+            tsk.ValidFrom = t.ValidFrom;
+            tsk.ValidTo = t.ValidTo;
             await _db.SaveChangesAsync();
             return RedirectToAction("Tasks", "Admin");
         }
-        public IActionResult DeleteTask(int id)
+
+
+        public  IActionResult DeleteTask(int id)
         {
             var t = _db.Tasks.Find(id);
             _db.Tasks.Remove(t);
-            _db.SaveChangesAsync();
+            _db.SaveChanges();
             return RedirectToAction("Tasks");
         }
 
