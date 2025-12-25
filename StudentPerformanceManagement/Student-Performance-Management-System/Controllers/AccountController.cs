@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Student_Performance_Management_System.Models;
 using Student_Performance_Management_System.ViewModel;
 
@@ -57,6 +58,7 @@ namespace Student_Performance_Management_System.Controllers
                         TotalGroups = _db.CourseGroups.Count(),
                         TotalTasks = _db.Tasks.Count(),
                         TotalStudent = _db.Students.Count(),
+                        TotalStaff = _db.Staffs.Count(),
                         TotalSubjects = _db.Subjects.Count()
                     };
                     return View("AdminDashboard", stats);
