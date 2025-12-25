@@ -25,16 +25,17 @@ namespace Student_Performance_Management_System.Controllers
         {
             return View();
         }
+
+
+
+        #region Student
+
         public IActionResult Students()
         {
             var students = _context.Students.ToList();
             return View(students);
         }
-        public IActionResult Courses()
-        {
-            var courses = _context.Courses.ToList();
-            return View(courses);
-        }
+        
 
 
         [HttpGet]
@@ -213,6 +214,10 @@ namespace Student_Performance_Management_System.Controllers
         }
 
 
+        #endregion
+
+
+
         #region  Staff
         // Staff
         public IActionResult Staff()
@@ -378,9 +383,15 @@ namespace Student_Performance_Management_System.Controllers
 
         #endregion
 
+        #region Course 
 
-    //Edit course
-    [HttpGet]
+        public IActionResult Courses()
+        {
+            var courses = _context.Courses.ToList();
+            return View(courses);
+        }
+        //Edit course
+        [HttpGet]
         public IActionResult EditCourse(int id)
         {
             var course = _context.Courses.FirstOrDefault(c => c.CourseId == id);
@@ -461,6 +472,134 @@ namespace Student_Performance_Management_System.Controllers
             return RedirectToAction("Courses");
         }
 
+
+        #endregion
+
+        #region CourseGroup
+
+        [HttpGet]
+        public IActionResult CourseGroups()
+        {
+            var groups = _context.CourseGroups
+                .Include(g => g.Course)
+                .ToList();
+
+            return View(groups);
+        }
+
+        // ADD (GET)
+        [HttpGet]
+        public IActionResult AddCourseGroup()
+        {
+            var vm = new AddCourseGroupVM
+            {
+                Courses = _context.Courses
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.CourseId.ToString(),
+                        Text = c.CourseName
+                    }).ToList()
+            };
+
+            return View(vm);
+        }
+
+        // ADD (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddCourseGroup(AddCourseGroup model)
+        {
+            /*if (!ModelState.IsValid)
+            {
+                
+                model.Courses = _context.Courses
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.CourseId.ToString(),
+                        Text = c.CourseName
+                    }).ToList();
+
+                return View(model);
+            }*/
+
+            var group = new CourseGroup
+            {
+                GroupName = model.CourseGroupName,
+                CourseId = model.CourseId
+            };
+
+            _context.CourseGroups.Add(group);
+            _context.SaveChanges();
+
+            return RedirectToAction("CourseGroups");
+        }
+
+
+        // EDIT (GET)
+        [HttpGet]
+        public IActionResult EditCourseGroup(int id)
+        {
+            var group = _context.CourseGroups.Find(id);
+            if (group == null)
+                return NotFound();
+
+            ViewBag.Courses = _context.Courses
+                .Select(c => new SelectListItem
+                {
+                    Value = c.CourseId.ToString(),
+                    Text = c.CourseName
+                }).ToList();
+
+            return View(group);
+        }
+
+        // EDIT (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditCourseGroup(CourseGroup model)
+        {
+            //if (!ModelState.IsValid)
+            //{
+            //    ViewBag.Courses = _context.Courses
+            //        .Select(c => new SelectListItem
+            //        {
+            //            Value = c.CourseId.ToString(),
+            //            Text = c.CourseName
+            //        }).ToList();
+
+            //    return View(model);
+            //}
+
+            var group = _context.CourseGroups.Find(model.CourseGroupId);
+            if (group == null)
+                return NotFound();
+
+            group.GroupName = model.GroupName;
+            group.CourseId = model.CourseId;
+
+            _context.SaveChanges();
+
+            return RedirectToAction("CourseGroups");
+        }
+
+        // DELETE
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteCourseGroup(int id)
+        {
+            var group = _context.CourseGroups.Find(id);
+            if (group == null)
+                return NotFound();
+
+            _context.CourseGroups.Remove(group);
+            _context.SaveChanges();
+
+            return RedirectToAction("CourseGroups");
+        }
+
+        #endregion
+
+        #region Subject
         public IActionResult Subjects()
         {
             var subjects = _context.Subjects
@@ -586,7 +725,7 @@ namespace Student_Performance_Management_System.Controllers
 
             return RedirectToAction("Subjects");
         }
-
+        #endregion
 
 
         #region tasks

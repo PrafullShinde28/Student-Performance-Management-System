@@ -9,7 +9,7 @@
 
 <h4>Tasks</h4>
 <hr />
-<div class="row" justify-content-center">
+<div class="row justify-content-center">
     <div class="col-md-4 ">
         <form asp-action="AddTask">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -25,8 +25,7 @@
                 <label class="form-label">Staff</label>
                 <select asp-for="StaffId"
                         asp-items="Model.Staffs"
-                        class="form-control"
-                        id="staffDropdown">
+                        class="form-control">
                     <option value="">-- Select Staff --</option>
                 </select>
             </div>
@@ -34,8 +33,7 @@
                 <label class="form-label">Course</label>
                 <select asp-for="CourseId"
                         asp-items="Model.Courses"
-                        class="form-control"
-                        id="courseDropdown">
+                        class="form-control">
                     <option value="">-- Select Course --</option>
                 </select>
             </div>
@@ -43,8 +41,7 @@
                 <label class="form-label">Course Group</label>
                 <select asp-for="CourseGroupId"
                         asp-items="Model.CourseGroups"
-                        class="form-control"
-                        id="groupDropdown">
+                        class="form-control">
                     <option value="">-- Select Course Group --</option>
                 </select>
             </div>
@@ -52,8 +49,7 @@
                 <label class="form-label">Subject</label>
                 <select asp-for="SubjectId"
                         asp-items="Model.Subjects"
-                        class="form-control"
-                        id="subjectDropdown">
+                        class="form-control">
                     <option value="">-- Select Subject --</option>
                 </select>
             </div>
@@ -76,44 +72,3 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-script for conditionwise dropdown
-<script>
-    function validateForm() {
-        let valid =
-            $('#subjectDropdown').val() &&
-            $('#groupDropdown').val();
-            
-
-        $('#submitBtn').prop('disabled', !valid);
-    }
-
-    $('#courseDropdown').change(function () {
-        let courseId = $(this).val();
-
-        $('#subjectDropdown').empty().append('<option value="">-- Select Subject --</option>');
-        $('#groupDropdown').empty().append('<option value="">-- Select Group --</option>');
-
-        if (courseId) {
-            $.get('/Admin/GetSubjectsByCourse', { courseId }, function (data) {
-                $.each(data, function (i, item) {
-                    $('#subjectDropdown').append(
-                        `<option value="${item.subjectId}">${item.subjectName}</option>`
-                    );
-                });
-            });
-
-            $.get('/Admin/GetGroupsByCourse', { courseId }, function (data) {
-                $.each(data, function (i, item) {
-                    $('#groupDropdown').append(
-                        `<option value="${item.courseGroupId}">${item.groupName}</option>`
-                    );
-                });
-            });
-        }
-
-        validateForm();
-    });
-    $('select,input').change(validateForm);
-</script>
