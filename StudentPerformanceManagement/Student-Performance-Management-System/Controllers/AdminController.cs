@@ -796,5 +796,142 @@ namespace Student_Performance_Management_System.Controllers
             return Json(subjects);
         }
         #endregion
+
+        [HttpGet]
+        public JsonResult GetSubjectsByCourses(int courseId)
+        {
+            var subjects = _context.Subjects
+                .Where(s => s.CourseId == courseId)
+                .Select(s => new
+                {
+                    s.SubjectId,
+                    s.SubjectName
+                }).ToList();
+
+            return Json(subjects);
+        }
+        [HttpGet]
+        public IActionResult SubjectWiseReport()
+        {
+            var model = new SubjectWiseReportVM
+            {
+                Courses = _context.Courses.Select(c => new SelectListItem
+                {
+                    Text = c.CourseName,
+                    Value = c.CourseId.ToString()
+                }).ToList(),
+
+                Subjects = new List<SelectListItem>()
+            };
+
+            return View(model);
+        }
+
+
+
+        [HttpPost]
+        public IActionResult SubjectWiseReport(SubjectWiseReportVM model)
+        {
+            model.Courses = _context.Courses.Select(c => new SelectListItem
+            {
+                Text = c.CourseName,
+                Value = c.CourseId.ToString()
+            }).ToList();
+
+            model.ReportRows = _context.Marks
+                .Include(m => m.Student)
+                .Where(m => m.SubjectId == model.SubjectId)
+                .Select(m => new StudentMarksRowVM
+                {
+                    PRN = m.Student.PRN,
+                    StudentName = m.Student.Name,
+                    TheoryMarks = m.TheoryMarks,
+                    LabMarks = m.LabMarks,
+                    InternalMarks = m.InternalMarks,
+                    TotalMarks = 100,
+                    ObtainedMarks = m.TheoryMarks + m.LabMarks + m.InternalMarks,
+                    ResultStatus = (m.TheoryMarks + m.LabMarks + m.InternalMarks) >= 40 ? "Pass" : "Fail"
+                }).ToList();
+
+            return View(model);
+        }
+
+
+
+
+        [HttpGet]
+        public IActionResult CourseWiseReport()
+        {
+            var model = new CourseWiseReportVM
+            {
+                Courses = _context.Courses.Select(c => new SelectListItem
+                {
+                    Text = c.CourseName,
+                    Value = c.CourseId.ToString()
+                }).ToList()
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public IActionResult CourseWiseReport(CourseWiseReportVM model)
+        {
+
+            model.Courses = _context.Courses.Select(c => new SelectListItem
+            {
+                Text = c.CourseName,
+                Value = c.CourseId.ToString()
+            }).ToList();
+
+            int subjectCount = _context.Subjects.Count(s => s.CourseId == model.CourseId);
+            int maxMarks = subjectCount * 100;
+
+            var students = _context.Students
+                .Where(s => s.CourseId == model.CourseId)
+                .Select(s => new
+                {
+                    s.PRN,
+                    s.Name,
+                    Marks = s.Marks.Select(m => new
+                    {
+                        m.TheoryMarks,
+                        m.LabMarks,
+                        m.InternalMarks
+                    }).ToList()
+                }).ToList();
+
+            var resultList = students.Select(s =>
+            {
+                int total = s.Marks.Sum(m => m.TheoryMarks + m.LabMarks + m.InternalMarks);
+
+                bool isPass = s.Marks.All(m =>
+                    m.TheoryMarks >= 16 &&
+                    m.LabMarks >= 16 &&
+                    m.InternalMarks >= 8);
+
+                return new StudentRankingRowVM
+                {
+                    PRN = s.PRN,
+                    StudentName = s.Name,
+                    TotalMarks = total,
+                    Percentage = Math.Round((double)total / maxMarks * 100, 2),
+                    ResultStatus = isPass ? "PASS" : "FAIL"
+                };
+            })
+            .OrderByDescending(x => x.TotalMarks)
+            .ToList();
+
+            int rank = 1;
+            foreach (var item in resultList)
+            {
+                item.Rank = rank++;
+            }
+
+            model.RankingRows = resultList;
+            return View(model);
+        }
+
     }
 }
