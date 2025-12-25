@@ -472,6 +472,35 @@ namespace Student_Performance_Management_System.Controllers
             return RedirectToAction("Courses");
         }
 
+        // student list
+        public IActionResult CourseStudents(int id)
+        {
+            var course = _context.Courses
+                .FirstOrDefault(c => c.CourseId == id);
+
+            if (course == null)
+                return NotFound();
+
+            var vm = new CourseStudentsVM
+            {
+                CourseId = course.CourseId,
+                CourseName = course.CourseName,
+                Students = _context.Students
+                    .Where(s => s.CourseId == id)
+                    .Select(s => new CourseStudentItemVM
+                    {
+                        PRN = s.PRN,
+                        Name = s.Name,
+                        Email = s.Email,
+                        MobileNo = s.MobileNo,
+                        CourseGroupName = s.CourseGroup.GroupName
+                    })
+                    .ToList()
+            };
+
+            return View(vm);
+        }
+
 
         #endregion
 
