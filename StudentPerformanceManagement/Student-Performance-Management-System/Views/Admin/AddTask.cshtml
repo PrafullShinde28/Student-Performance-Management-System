@@ -13,6 +13,17 @@
     <div class="col-md-4 ">
         <form asp-action="AddTask">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+           
+            <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" name="Title" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <input type="text" name="Description" class="form-control" required />
+            </div>
+
             <div class="mb-3">
                 <label class="form-label">Staff</label>
                 <select asp-for="StaffId"

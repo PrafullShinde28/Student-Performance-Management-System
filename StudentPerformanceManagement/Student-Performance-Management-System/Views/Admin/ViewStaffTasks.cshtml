@@ -1,0 +1,74 @@
+﻿@model Student_Performance_Management_System.ViewModel.StaffTaskAssignedVM
+
+@{
+    ViewData["Title"] = "Staff Tasks";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-semibold">
+            Tasks Assigned to: <span class="text-primary">@Model.StaffName</span>
+        </h4>
+
+        <a asp-action="Staff" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Course</th>
+                        <th>Course Group</th>
+                        <th>Subject</th>
+                        <th>Valid From</th>
+                        <th>Valid To</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (!Model.Tasks.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                No tasks assigned.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var task in Model.Tasks)
+                        {
+                            <tr>
+                                <td>@task.Title</td>
+                                <td>@task.Description</td>
+                                <td>@task.CourseName</td>
+                                <td>@task.CourseGroupName</td>
+                                <td>@task.SubjectName</td>
+                                <td>@task.ValidFrom.ToString("dd-MMM-yyyy")</td>
+                                <td>@task.ValidTo.ToString("dd-MMM-yyyy")</td>
+                                <td>
+                                    <span class="badge
+                                                @(task.Status == "Completed" ? "bg-success" :
+                                                                                    task.Status == "Overdue" ? "bg-danger" :
+                                                                                    "bg-warning")">
+                                        @task.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>

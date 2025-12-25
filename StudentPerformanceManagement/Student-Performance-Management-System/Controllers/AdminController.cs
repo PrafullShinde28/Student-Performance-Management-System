@@ -212,6 +212,8 @@ namespace Student_Performance_Management_System.Controllers
             return View(model);
         }
 
+
+        #region  Staff
         // Staff
         public IActionResult Staff()
         {
@@ -334,10 +336,51 @@ namespace Student_Performance_Management_System.Controllers
         }
 
 
+       
+        public IActionResult ViewStaffTasks(int id)
+            {
+                var staff = _context.Staffs
+                    .Include(s => s.Tasks)
+                        .ThenInclude(t => t.Course)
+                    .Include(s => s.Tasks)
+                        .ThenInclude(t => t.CourseGroup)
+                    .Include(s => s.Tasks)
+                        .ThenInclude(t => t.Subject)
+                    .FirstOrDefault(s => s.StaffId == id);
+
+                if (staff == null)
+                    return NotFound();
+
+                var vm = new StaffTaskAssignedVM
+                {
+                    StaffId = staff.StaffId,
+                    StaffName = staff.Name
+                };
+
+                foreach (var task in staff.Tasks)
+                {
+                    vm.Tasks.Add(new TaskDetailsVM
+                    {
+                        Title = task.Title,
+                        Description = task.Description,
+                        CourseName = task.Course.CourseName,
+                        CourseGroupName = task.CourseGroup.GroupName,
+                        SubjectName = task.Subject.SubjectName,
+                        ValidFrom = task.ValidFrom,
+                        ValidTo = task.ValidTo,
+                        Status = task.Status.ToString()
+                    });
+                }
+
+                return View(vm);
+            }
 
 
-        //Edit course
-        [HttpGet]
+        #endregion
+
+
+    //Edit course
+    [HttpGet]
         public IActionResult EditCourse(int id)
         {
             var course = _context.Courses.FirstOrDefault(c => c.CourseId == id);
