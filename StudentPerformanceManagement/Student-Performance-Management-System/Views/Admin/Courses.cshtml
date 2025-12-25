@@ -27,6 +27,7 @@
                         <th>Description</th>
                         <th>Duration</th>
                         <th>Fees</th>
+                        <th class="text-center">Students Enrolled</th>
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
@@ -44,6 +45,16 @@
                             <td>@course.Description</td>
                             <td>@course.Duration</td>
                             <td>₹@course.Fees</td>
+
+                            <td class="text-center">
+                                <a asp-controller="Admin"
+                                   asp-action="CourseStudents"
+                                   asp-route-id="@course.CourseId"
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-people"></i> View
+                                </a>
+                            </td>
+
                             <td class="text-center">
 
                                 <!-- EDIT -->
