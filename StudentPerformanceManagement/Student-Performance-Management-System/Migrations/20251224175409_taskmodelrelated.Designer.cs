@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Student_Performance_Management_System;
 
@@ -11,9 +12,11 @@ using Student_Performance_Management_System;
 namespace Student_Performance_Management_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251224175409_taskmodelrelated")]
+    partial class taskmodelrelated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -455,6 +458,9 @@ namespace Student_Performance_Management_System.Migrations
                     b.Property<int>("StaffId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("StaffId1")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -478,6 +484,8 @@ namespace Student_Performance_Management_System.Migrations
                     b.HasIndex("CourseId");
 
                     b.HasIndex("StaffId");
+
+                    b.HasIndex("StaffId1");
 
                     b.HasIndex("SubjectId");
 
@@ -637,10 +645,14 @@ namespace Student_Performance_Management_System.Migrations
                         .IsRequired();
 
                     b.HasOne("Student_Performance_Management_System.Models.Staff", "Staff")
-                        .WithMany("Tasks")
+                        .WithMany()
                         .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Student_Performance_Management_System.Models.Staff", null)
+                        .WithMany("Tasks")
+                        .HasForeignKey("StaffId1");
 
                     b.HasOne("Student_Performance_Management_System.Models.Subject", "Subject")
                         .WithMany()

@@ -60,7 +60,7 @@ namespace Student_Performance_Management_System
 
             builder.Entity<Tasks>()
                .HasOne(t => t.Staff)
-               .WithMany()
+               .WithMany(m=>m.Tasks)
                .HasForeignKey(t => t.StaffId)
                .OnDelete(DeleteBehavior.Restrict);
 
