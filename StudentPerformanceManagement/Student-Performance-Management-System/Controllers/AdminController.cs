@@ -26,8 +26,6 @@ namespace Student_Performance_Management_System.Controllers
             return View();
         }
 
-
-
         #region Student
 
         public IActionResult Students()
@@ -215,8 +213,6 @@ namespace Student_Performance_Management_System.Controllers
 
 
         #endregion
-
-
 
         #region  Staff
         // Staff
@@ -727,7 +723,6 @@ namespace Student_Performance_Management_System.Controllers
         }
         #endregion
 
-
         #region tasks
         public IActionResult Tasks()
         {
@@ -795,7 +790,6 @@ namespace Student_Performance_Management_System.Controllers
 
             return Json(subjects);
         }
-        #endregion
 
         [HttpGet]
         public JsonResult GetSubjectsByCourses(int courseId)
@@ -810,6 +804,52 @@ namespace Student_Performance_Management_System.Controllers
 
             return Json(subjects);
         }
+
+        public IActionResult EditTask(int id)
+        {
+            var t = _db.Tasks.Find(id);
+            ViewBag.TaskTitle = t.Title;
+            ViewBag.Description = t.Description;
+            var data = new AddTasksViewModel
+            {
+                Courses = _db.Courses.Select(c => new SelectListItem { Value = c.CourseId.ToString(), Text = c.CourseName }).ToList(),
+                CourseGroups = _db.CourseGroups.Select(c => new SelectListItem { Value = c.CourseGroupId.ToString(), Text = c.GroupName }).ToList(),
+                Subjects = _db.Subjects.Select(s => new SelectListItem { Value = s.SubjectId.ToString(), Text = s.SubjectName }).ToList(),
+                Staffs = _db.Staffs.Select(s => new SelectListItem { Value = s.StaffId.ToString(), Text = s.Name }).ToList()
+            };
+            return View(data);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditTask(AddTask t)
+        {
+            var task = new Tasks()
+            {
+                Title = t.Title,
+                Description = t.Description,
+                StaffId = t.StaffId,
+                CourseId = t.CourseId,
+                SubjectId = t.SubjectId,
+                CourseGroupId = t.CourseGroupId,
+                ValidFrom = t.ValidFrom,
+                ValidTo = t.ValidTo,
+                Status = Status.Pending
+            };
+            _db.Tasks.Add(task);
+            await _db.SaveChangesAsync();
+            return RedirectToAction("Tasks", "Admin");
+        }
+        public IActionResult DeleteTask(int id)
+        {
+            var t = _db.Tasks.Find(id);
+            _db.Tasks.Remove(t);
+            _db.SaveChangesAsync();
+            return RedirectToAction("Tasks");
+        }
+
+        #endregion
+
+        #region report
         [HttpGet]
         public IActionResult SubjectWiseReport()
         {
@@ -932,6 +972,7 @@ namespace Student_Performance_Management_System.Controllers
             model.RankingRows = resultList;
             return View(model);
         }
+        #endregion
 
     }
 }
