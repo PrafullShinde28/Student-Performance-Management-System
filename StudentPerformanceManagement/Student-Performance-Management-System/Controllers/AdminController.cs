@@ -899,23 +899,33 @@ namespace Student_Performance_Management_System.Controllers
 
         #region report
         [HttpGet]
+        public JsonResult GetSubjectByCourse(int courseId)
+        {
+            var subjects = _context.Subjects
+                .Where(s => s.CourseId == courseId)
+                .Select(s => new
+                {
+                    s.SubjectId,
+                    s.SubjectName
+                }).ToList();
+
+            return Json(subjects);
+        }
+
+        [HttpGet]
         public IActionResult SubjectWiseReport()
         {
             var model = new SubjectWiseReportVM
             {
-                Courses = _context.Courses.Select(c => new SelectListItem
+                Courses = _context.Courses.Include(c => c.Subjects).Select(c => new SelectListItem
                 {
                     Text = c.CourseName,
                     Value = c.CourseId.ToString()
-                }).ToList(),
-
-                Subjects = new List<SelectListItem>()
+                }).ToList()
             };
 
             return View(model);
         }
-
-
 
         [HttpPost]
         public IActionResult SubjectWiseReport(SubjectWiseReportVM model)
@@ -926,24 +936,60 @@ namespace Student_Performance_Management_System.Controllers
                 Value = c.CourseId.ToString()
             }).ToList();
 
-            model.ReportRows = _context.Marks
+            var list = _context.Marks
                 .Include(m => m.Student)
                 .Where(m => m.SubjectId == model.SubjectId)
-                .Select(m => new StudentMarksRowVM
+                .ToList()
+                .Select(m =>
                 {
-                    PRN = m.Student.PRN,
-                    StudentName = m.Student.Name,
-                    TheoryMarks = m.TheoryMarks,
-                    LabMarks = m.LabMarks,
-                    InternalMarks = m.InternalMarks,
-                    TotalMarks = 100,
-                    ObtainedMarks = m.TheoryMarks + m.LabMarks + m.InternalMarks,
-                    ResultStatus = (m.TheoryMarks + m.LabMarks + m.InternalMarks) >= 40 ? "Pass" : "Fail"
-                }).ToList();
+                    string failed = "";
 
+                    if (m.TheoryMarks < 40) failed += "T";
+                    if (m.LabMarks < 20) failed += "L";
+                    if (m.InternalMarks < 20) failed += "I";
+
+                    bool isPass = failed == "";
+
+                    return new StudentMarksRowVM
+                    {
+                        PRN = m.Student.PRN,
+                        StudentName = m.Student.Name,
+                        TheoryMarks = m.TheoryMarks,
+                        LabMarks = m.LabMarks,
+                        InternalMarks = m.InternalMarks,
+                        TotalMarks = 100,
+                        ObtainedMarks = m.TheoryMarks + m.LabMarks + m.InternalMarks,
+                        FailedIn = failed,
+                        ResultStatus = isPass ? "Pass" : "Fail"
+                    };
+                })
+                .OrderByDescending(x => x.ObtainedMarks)
+                .ToList();
+
+
+            int rank = 1;
+            int prevMarks = -1;
+            int skip = 0;
+
+            foreach (var item in list)
+            {
+                if (item.ObtainedMarks == prevMarks)
+                {
+                    item.Rank = rank;
+                    skip++;
+                }
+                else
+                {
+                    rank += skip;
+                    item.Rank = rank;
+                    skip = 1;
+                    prevMarks = item.ObtainedMarks;
+                }
+            }
+
+            model.ReportRows = list;
             return View(model);
         }
-
 
 
 
@@ -966,58 +1012,83 @@ namespace Student_Performance_Management_System.Controllers
         [HttpPost]
         public IActionResult CourseWiseReport(CourseWiseReportVM model)
         {
-
             model.Courses = _context.Courses.Select(c => new SelectListItem
             {
                 Text = c.CourseName,
                 Value = c.CourseId.ToString()
             }).ToList();
 
-            int subjectCount = _context.Subjects.Count(s => s.CourseId == model.CourseId);
-            int maxMarks = subjectCount * 100;
+            var subjectNames = _context.Subjects
+                .Where(s => s.CourseId == model.CourseId)
+                .Select(s => s.SubjectName)
+                .ToList();
 
             var students = _context.Students
+                .Include(s => s.Marks)
+                .ThenInclude(m => m.Subject)
                 .Where(s => s.CourseId == model.CourseId)
-                .Select(s => new
-                {
-                    s.PRN,
-                    s.Name,
-                    Marks = s.Marks.Select(m => new
-                    {
-                        m.TheoryMarks,
-                        m.LabMarks,
-                        m.InternalMarks
-                    }).ToList()
-                }).ToList();
+                .ToList();
 
-            var resultList = students.Select(s =>
+            var list = students.Select(s =>
             {
-                int total = s.Marks.Sum(m => m.TheoryMarks + m.LabMarks + m.InternalMarks);
+                var marksList = new List<SubjectMarksVM>();
+                int total = 0;
+                bool courseFail = false;
 
-                bool isPass = s.Marks.All(m =>
-                    m.TheoryMarks >= 16 &&
-                    m.LabMarks >= 16 &&
-                    m.InternalMarks >= 8);
+                foreach (var m in s.Marks)
+                {
+                    string failed = "";
+                    if (m.TheoryMarks < 16) failed += "T";
+                    if (m.LabMarks < 16) failed += "L";
+                    if (m.InternalMarks < 8) failed += "I";
+
+                    if (failed != "") courseFail = true;
+
+                    marksList.Add(new SubjectMarksVM
+                    {
+                        SubjectName = m.Subject.SubjectName,
+                        Theory = m.TheoryMarks,
+                        Lab = m.LabMarks,
+                        Internal = m.InternalMarks,
+                        FailedIn = failed
+                    });
+
+                    total += m.TheoryMarks + m.LabMarks + m.InternalMarks;
+                }
 
                 return new StudentRankingRowVM
                 {
                     PRN = s.PRN,
                     StudentName = s.Name,
+                    SubjectMarks = marksList,
                     TotalMarks = total,
-                    Percentage = Math.Round((double)total / maxMarks * 100, 2),
-                    ResultStatus = isPass ? "PASS" : "FAIL"
+                    Percentage = Math.Round((double)total / (subjectNames.Count * 100) * 100, 2),
+                    ResultStatus = courseFail ? "FAIL" : "PASS"
                 };
             })
             .OrderByDescending(x => x.TotalMarks)
             .ToList();
 
-            int rank = 1;
-            foreach (var item in resultList)
+            // Rank with ties
+            int rank = 1, prev = -1, skip = 0;
+            foreach (var item in list)
             {
-                item.Rank = rank++;
+                if (item.TotalMarks == prev)
+                {
+                    item.Rank = rank;
+                    skip++;
+                }
+                else
+                {
+                    rank += skip;
+                    item.Rank = rank;
+                    skip = 1;
+                    prev = item.TotalMarks;
+                }
             }
 
-            model.RankingRows = resultList;
+            model.SubjectNames = subjectNames;
+            model.RankingRows = list;
             return View(model);
         }
         #endregion
