@@ -721,13 +721,20 @@ namespace Student_Performance_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteSubjects(int id)
         {
-            var subject = _context.Subjects.FirstOrDefault(s => s.SubjectId == id);
+            try
+            {
+                var subject = _context.Subjects.FirstOrDefault(s => s.SubjectId == id);
+                if (subject == null) return NotFound();
 
-            if (subject == null)
-                return NotFound();
+                _context.Subjects.Remove(subject);
+                _context.SaveChanges();
 
-            _context.Subjects.Remove(subject);
-            _context.SaveChanges();
+                TempData["DeleteSuccess"] = "Subject deleted successfully.";
+            }
+            catch (DbUpdateException)
+            {
+                TempData["DeleteError"] = "This subject is already used in student marks or tasks and cannot be deleted.";
+            }
 
             return RedirectToAction("Subjects");
         }
