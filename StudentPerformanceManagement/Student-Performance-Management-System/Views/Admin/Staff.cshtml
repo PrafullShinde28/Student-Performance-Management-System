@@ -1,5 +1,20 @@
 ﻿@model IEnumerable<Student_Performance_Management_System.Models.Staff>
 
+@if (TempData["Error"] != null)
+{
+    <script>
+        alert('@TempData["Error"]');
+    </script>
+}
+
+@if (TempData["Success"] != null)
+{
+    <script>
+        alert('@TempData["Success"]');
+    </script>
+}
+
+
 @{
     ViewData["Title"] = "Staff";
     Layout = "_AdminLayout";

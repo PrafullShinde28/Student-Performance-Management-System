@@ -321,6 +321,7 @@ namespace Student_Performance_Management_System.Controllers
 
 
 
+        //Delete staff
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteStaff(int id)
@@ -328,6 +329,14 @@ namespace Student_Performance_Management_System.Controllers
             var staff = _context.Staffs.FirstOrDefault(s => s.StaffId == id);
             if (staff == null)
                 return NotFound();
+
+            bool hasTasks = _context.Tasks.Any(t => t.StaffId == id);
+
+            if (hasTasks)
+            {
+                TempData["Error"] = "Cannot delete this staff member because tasks are assigned to them.";
+                return RedirectToAction("Staff");
+            }
 
             var user = await _userManager.FindByIdAsync(staff.AppUserId);
 
@@ -337,11 +346,12 @@ namespace Student_Performance_Management_System.Controllers
             if (user != null)
                 await _userManager.DeleteAsync(user);
 
+            TempData["Success"] = "Staff deleted successfully.";
             return RedirectToAction("Staff");
         }
 
 
-       
+
         public IActionResult ViewStaffTasks(int id)
             {
                 var staff = _context.Staffs
