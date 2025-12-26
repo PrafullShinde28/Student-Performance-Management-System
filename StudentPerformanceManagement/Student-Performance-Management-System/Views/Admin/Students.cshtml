@@ -7,16 +7,37 @@
 
 <div class="container-fluid">
 
-    <!-- Page Header -->
+    <!-- SUCCESS / ERROR MESSAGE (CENTER) -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="position-fixed top-50 start-50 translate-middle z-3">
+            <div class="alert alert-success shadow-lg text-center px-4 py-3 rounded-3">
+                @TempData["Success"]
+            </div>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="position-fixed top-50 start-50 translate-middle z-3">
+            <div class="alert alert-danger shadow-lg text-center px-4 py-3 rounded-3">
+                @TempData["Error"]
+            </div>
+        </div>
+    }
+
+    <!-- PAGE HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-semibold">Students</h4>
 
-        <a asp-action="EnrollStudent" asp-controller="Admin" class="btn btn-primary">
+        <a asp-action="EnrollStudent"
+           asp-controller="Admin"
+           class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Add Student
         </a>
     </div>
 
-    <!-- Students Table -->
+    <!-- STUDENTS TABLE -->
     <div class="card shadow-sm">
         <div class="card-body p-0">
             <table class="table table-hover mb-0 align-middle">
@@ -37,12 +58,11 @@
                 <tbody>
                     @if (Model != null && Model.Any())
                     {
-                        int srNo = 1;
-
+                        int sr = 1;
                         foreach (var student in Model)
                         {
                             <tr>
-                                <td>@srNo</td>
+                                <td>@sr</td>
                                 <td>@student.PRN</td>
                                 <td>@student.Name</td>
                                 <td>@student.Email</td>
@@ -60,7 +80,7 @@
 
                                 <td class="text-center">
 
-                                    <!-- Edit Button -->
+                                    <!-- EDIT -->
                                     <a asp-action="EditStudent"
                                        asp-controller="Admin"
                                        asp-route-id="@student.StudentId"
@@ -68,25 +88,16 @@
                                         <i class="bi bi-pencil"></i>
                                     </a>
 
-                                    <!-- Delete Button -->
-                                    <form asp-action="DeleteStudent"
-                                          asp-controller="Admin"
-                                          asp-route-id="@student.StudentId"
-                                          method="post"
-                                          class="d-inline"
-                                          onsubmit="return confirm('Are you sure you want to delete this student?');">
-
-                                        @Html.AntiForgeryToken()
-
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    <!-- DELETE (OPEN CONFIRM MODAL) -->
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="openDeleteModal(@student.StudentId)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
 
                                 </td>
                             </tr>
-
-                            srNo++;
+                            sr++;
                         }
                     }
                     else
@@ -98,9 +109,68 @@
                         </tr>
                     }
                 </tbody>
-
             </table>
         </div>
     </div>
-
 </div>
+
+<!-- DELETE CONFIRM MODAL (ONLY ONCE) -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i> Confirm Delete
+                </h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <p class="fs-5 fw-semibold">Are you sure?</p>
+                <p class="text-muted mb-0">
+                    This student will be permanently deleted.
+                </p>
+            </div>
+
+            <div class="modal-footer justify-content-center">
+                <form id="deleteForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit"
+                            id="confirmDeleteBtn"
+                            class="btn btn-danger px-4">
+                        Yes, Delete
+                    </button>
+                </form>
+
+                <button type="button"
+                        class="btn btn-outline-secondary px-4"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+    function openDeleteModal(studentId) {
+        const btn = document.getElementById('confirmDeleteBtn');
+        btn.setAttribute('formaction', '/Admin/DeleteStudent/' + studentId);
+        btn.setAttribute('formmethod', 'post');
+
+        const modal = new bootstrap.Modal(
+            document.getElementById('deleteModal')
+        );
+        modal.show();
+    }
+
+    // auto-hide success/error message
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(a => a.remove());
+    }, 3000);
+</script>

@@ -15,57 +15,116 @@
                 </div>
 
                 <div class="card-body">
-                    <form method="post">
+                    <form asp-action="EnrollStudent" method="post">
 
+                        <!-- NAME -->
                         <div class="mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" name="name" class="form-control" required />
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
                         </div>
 
+                        <!-- EMAIL -->
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" required />
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
                         </div>
 
+                        <!-- MOBILE -->
                         <div class="mb-3">
-                            <label class="form-label">Mobile Number</label>
-                            <input type="text" name="mobileno" class="form-control" required />
+                            <label asp-for="MobileNo" class="form-label"></label>
+                            <input asp-for="MobileNo" class="form-control" />
+                            <span asp-validation-for="MobileNo" class="text-danger small"></span>
                         </div>
 
+                        <!-- COURSE -->
                         <div class="mb-3">
-                            <label class="form-label">Course</label>
-                            <select asp-for="CourseId" asp-items="Model.Courses" class="form-select">
+                            <label asp-for="CourseId" class="form-label"></label>
+                            <select asp-for="CourseId"
+                                    asp-items="Model.Courses"
+                                    class="form-select"
+                                    id="courseDropdown">
                                 <option value="">-- Select Course --</option>
                             </select>
+                            <span asp-validation-for="CourseId" class="text-danger small"></span>
                         </div>
 
+                        <!-- COURSE GROUP -->
                         <div class="mb-3">
-                            <label class="form-label">Course Group</label>
-                            <select asp-for="CourseGroupId" asp-items="Model.CourseGroups" class="form-select">
+                            <label asp-for="CourseGroupId" class="form-label"></label>
+                            <select asp-for="CourseGroupId"
+                                    class="form-select"
+                                    id="groupDropdown">
                                 <option value="">-- Select Course Group --</option>
                             </select>
+                            <span asp-validation-for="CourseGroupId" class="text-danger small"></span>
                         </div>
-
 
                         <div class="alert alert-secondary small">
                             Default Password: <strong>Student@123</strong>
                         </div>
 
-                        <div class="d-flex justify-content-end gap-2">
+                        <div class="d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-person-plus"></i> Enroll
                             </button>
                         </div>
-                    </form>
 
-                    <!-- Validation Errors -->
-                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                    {
-                        <div class="text-danger small mt-2">@error.ErrorMessage</div>
-                    }
+                    </form>
                 </div>
             </div>
 
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('#courseDropdown').change(function () {
+
+                var courseId = $(this).val();
+                var groupDropdown = $('#groupDropdown');
+
+                groupDropdown.empty();
+                groupDropdown.append('<option value="">Loading...</option>');
+
+                if (!courseId) {
+                    groupDropdown.empty();
+                    groupDropdown.append('<option value="">-- Select Course Group --</option>');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/Admin/GetGroupsByCourseId',
+                    type: 'GET',
+                    data: { courseId: courseId },
+                    success: function (data) {
+
+                        groupDropdown.empty();
+                        groupDropdown.append('<option value="">-- Select Course Group --</option>');
+
+                        if (data.length === 0) {
+                            groupDropdown.append('<option value="">No groups found</option>');
+                        }
+
+                        $.each(data, function (i, item) {
+                            groupDropdown.append(
+                                `<option value="${item.id}">${item.name}</option>`
+                            );
+                        });
+                    },
+                    error: function () {
+                        alert('Error loading course groups');
+                    }
+                });
+            });
+        });
+    </script>
+}
