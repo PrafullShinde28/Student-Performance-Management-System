@@ -620,9 +620,25 @@ namespace Student_Performance_Management_System.Controllers
             if (group == null)
                 return NotFound();
 
+            bool hasStudents = _context.Students.Any(s => s.CourseGroupId == id);
+            bool hasTasks = _context.Tasks.Any(t => t.CourseGroupId == id);
+
+            if (hasStudents)
+            {
+                TempData["Error"] = "Cannot delete this course group because students are assigned to it.";
+                return RedirectToAction("CourseGroups");
+            }
+
+            if (hasTasks)
+            {
+                TempData["Error"] = "Cannot delete this course group because tasks are assigned to it.";
+                return RedirectToAction("CourseGroups");
+            }
+
             _context.CourseGroups.Remove(group);
             _context.SaveChanges();
 
+            TempData["Success"] = "Course group deleted successfully.";
             return RedirectToAction("CourseGroups");
         }
 
