@@ -1,0 +1,12 @@
+﻿using Student_Performance_Management_System.Models;
+
+namespace Student_Performance_Management_System.ViewModel
+{
+    public class PerformanceCard
+    {
+        public string StudentPRN { get; set; }
+        public string StudentName { get; set; }
+        public string CourseName { get; set; }
+        public List<SubjectMarksViewModel> Subjects { get; set; }
+    }
+}
