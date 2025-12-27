@@ -7,48 +7,41 @@
 
 <div class="container-fluid">
 
-    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-semibold text-primary">
-            <i class="bi bi-journal-plus"></i> Add Course Group
-        </h4>
-
-        <a asp-action="CourseGroups" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back
-        </a>
+        <h4 class="fw-semibold text-primary">Add Course Group</h4>
+        <a asp-action="CourseGroups" class="btn btn-outline-secondary">Back</a>
     </div>
 
-    <!-- Card -->
     <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-            <div class="card shadow border-0 rounded-4">
-                <div class="card-body p-4">
+        <div class="col-lg-6">
+
+            <div class="card shadow">
+                <div class="card-body">
 
                     <form asp-action="AddCourseGroup" method="post">
                         @Html.AntiForgeryToken()
 
-                        <!-- Group Name -->
+                        <!-- GROUP NAME -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Group Name</label>
+                            <label class="form-label">Group Name</label>
                             <input asp-for="CourseGroupName" class="form-control" />
-                            <span asp-validation-for="CourseGroupName" class="text-danger"></span>
+                            <span asp-validation-for="CourseGroupName" class="text-danger small"></span>
                         </div>
 
-                        <!-- Course -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Course</label>
+                        <!-- COURSE -->
+                        <div class="mb-3">
+                            <label class="form-label">Course</label>
                             <select asp-for="CourseId"
                                     asp-items="Model.Courses"
                                     class="form-select">
                                 <option value="">-- Select Course --</option>
                             </select>
-                            <span asp-validation-for="CourseId" class="text-danger"></span>
+                            <span asp-validation-for="CourseId" class="text-danger small"></span>
                         </div>
 
-                        <!-- Buttons -->
                         <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary px-4">
-                                <i class="bi bi-save"></i> Save
+                            <button type="submit" class="btn btn-primary">
+                                Save
                             </button>
                         </div>
 
@@ -56,7 +49,12 @@
 
                 </div>
             </div>
+
         </div>
     </div>
 
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

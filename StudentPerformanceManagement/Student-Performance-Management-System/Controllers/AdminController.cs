@@ -605,11 +605,10 @@ namespace Student_Performance_Management_System.Controllers
         // ADD (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddCourseGroup(AddCourseGroup model)
+        public IActionResult AddCourseGroup(AddCourseGroupVM model)
         {
-            /*if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                
                 model.Courses = _context.Courses
                     .Select(c => new SelectListItem
                     {
@@ -618,19 +617,31 @@ namespace Student_Performance_Management_System.Controllers
                     }).ToList();
 
                 return View(model);
-            }*/
+            }
+
+            bool exists = _context.CourseGroups.Any(g =>
+                g.GroupName == model.CourseGroupName &&
+                g.CourseId == model.CourseId);
+
+            if (exists)
+            {
+                TempData["Error"] = "This course group already exists.";
+                return RedirectToAction("CourseGroups");
+            }
 
             var group = new CourseGroup
             {
                 GroupName = model.CourseGroupName,
-                CourseId = model.CourseId
+                CourseId = model.CourseId.Value
             };
 
             _context.CourseGroups.Add(group);
             _context.SaveChanges();
 
+            TempData["Success"] = "Course group added successfully.";
             return RedirectToAction("CourseGroups");
         }
+
 
 
         // EDIT (GET)
@@ -656,29 +667,33 @@ namespace Student_Performance_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditCourseGroup(CourseGroup model)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    ViewBag.Courses = _context.Courses
-            //        .Select(c => new SelectListItem
-            //        {
-            //            Value = c.CourseId.ToString(),
-            //            Text = c.CourseName
-            //        }).ToList();
-
-            //    return View(model);
-            //}
+            if (!ModelState.IsValid)
+                return View(model);
 
             var group = _context.CourseGroups.Find(model.CourseGroupId);
             if (group == null)
                 return NotFound();
+
+            bool duplicate = _context.CourseGroups.Any(g =>
+                g.CourseGroupId != model.CourseGroupId &&
+                g.GroupName == model.GroupName &&
+                g.CourseId == model.CourseId);
+
+            if (duplicate)
+            {
+                TempData["Error"] = "Another group with same name already exists.";
+                return RedirectToAction("CourseGroups");
+            }
 
             group.GroupName = model.GroupName;
             group.CourseId = model.CourseId;
 
             _context.SaveChanges();
 
+            TempData["Success"] = "Course group updated successfully.";
             return RedirectToAction("CourseGroups");
         }
+
 
         // DELETE
         [HttpPost]
@@ -694,13 +709,13 @@ namespace Student_Performance_Management_System.Controllers
 
             if (hasStudents)
             {
-                TempData["Error"] = "Cannot delete this course group because students are assigned to it.";
+                TempData["Error"] = "Cannot delete course group. Students are assigned.";
                 return RedirectToAction("CourseGroups");
             }
 
             if (hasTasks)
             {
-                TempData["Error"] = "Cannot delete this course group because tasks are assigned to it.";
+                TempData["Error"] = "Cannot delete course group. Tasks are assigned.";
                 return RedirectToAction("CourseGroups");
             }
 
@@ -771,6 +786,7 @@ namespace Student_Performance_Management_System.Controllers
             subject.CourseId = vm.CourseId;
 
             _context.SaveChanges();
+            TempData["Success"] = "Subject updated successfully.";
             return RedirectToAction("Subjects");
         }
 
@@ -788,11 +804,11 @@ namespace Student_Performance_Management_System.Controllers
                 _context.Subjects.Remove(subject);
                 _context.SaveChanges();
 
-                TempData["DeleteSuccess"] = "Subject deleted successfully.";
+                TempData["Success"] = "Subject deleted successfully.";
             }
             catch (DbUpdateException)
             {
-                TempData["DeleteError"] = "This subject is already used in student marks or tasks and cannot be deleted.";
+                TempData["Error"] = "This subject is already used in student marks or tasks and cannot be deleted.";
             }
 
             return RedirectToAction("Subjects");
@@ -843,7 +859,7 @@ namespace Student_Performance_Management_System.Controllers
 
             _context.Subjects.Add(subject);
             _context.SaveChanges();
-
+            TempData["Success"] = "Subject added successfully.";
             return RedirectToAction("Subjects");
         }
         #endregion
