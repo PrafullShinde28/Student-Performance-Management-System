@@ -7,6 +7,26 @@
 
 <div class="container-fluid">
 
+    <!-- SUCCESS MESSAGE -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="position-fixed top-50 start-50 translate-middle z-3">
+            <div class="alert alert-success shadow-lg text-center px-4 py-3 rounded-3">
+                @TempData["Success"]
+            </div>
+        </div>
+    }
+
+    <!-- ERROR MESSAGE -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="position-fixed top-50 start-50 translate-middle z-3">
+            <div class="alert alert-danger shadow-lg text-center px-4 py-3 rounded-3">
+                @TempData["Error"]
+            </div>
+        </div>
+    }
+
     <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-semibold">Courses</h4>
@@ -64,23 +84,15 @@
                                    class="btn btn-sm btn-outline-warning me-1">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <!-- DElETE -->
-                                <form asp-controller="Admin"
-                                      asp-action="DeleteCourse"
-                                      asp-route-id="@course.CourseId"
-                                      method="post"
-                                      class="d-inline">
 
-                                    @Html.AntiForgeryToken()
-
-                                    <button type="submit"
-                                            class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Are you sure you want to delete this course?');">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-
-
+                                <!-- DELETE (MODAL TRIGGER) -->
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteConfirmModal"
+                                        data-course-id="@course.CourseId">
+                                    <i class="bi bi-trash"></i>
+                                </button>
                             </td>
                         </tr>
 
@@ -90,7 +102,7 @@
                     @if (!Model.Any())
                     {
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">
+                            <td colspan="7" class="text-center text-muted py-4">
                                 No courses available.
                             </td>
                         </tr>
@@ -100,5 +112,63 @@
             </table>
         </div>
     </div>
-
 </div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title text-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <p class="mb-1">
+                    Are you sure you want to delete this course?
+                </p>
+                @* <small class="text-muted">
+                    This action cannot be undone.
+                </small> *@
+            </div>
+
+            <div class="modal-footer justify-content-center">
+                <form id="deleteCourseForm" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit" class="btn btn-danger px-4">
+                        Yes, Delete
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary px-4"
+                            data-bs-dismiss="modal">
+                        Cancel
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+    // auto-hide messages
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(a => a.remove());
+    }, 3000);
+
+    // pass course id to delete form
+    var deleteModal = document.getElementById('deleteConfirmModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var courseId = button.getAttribute('data-course-id');
+
+        var form = document.getElementById('deleteCourseForm');
+        form.action = '/Admin/DeleteCourse/' + courseId;
+    });
+</script>

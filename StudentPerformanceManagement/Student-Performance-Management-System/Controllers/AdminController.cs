@@ -478,7 +478,6 @@ namespace Student_Performance_Management_System.Controllers
                 return View(model);
 
             var course = _context.Courses.FirstOrDefault(c => c.CourseId == model.CourseId);
-
             if (course == null)
                 return NotFound();
 
@@ -489,8 +488,10 @@ namespace Student_Performance_Management_System.Controllers
 
             _context.SaveChanges();
 
+            TempData["Success"] = "Course updated successfully.";
             return RedirectToAction("Courses");
         }
+
 
 
 
@@ -499,12 +500,10 @@ namespace Student_Performance_Management_System.Controllers
         public IActionResult DeleteCourse(int id)
         {
             var course = _context.Courses.Find(id);
-
             if (course == null)
                 return NotFound();
 
             bool hasStudents = _context.Students.Any(s => s.CourseId == id);
-
             if (hasStudents)
             {
                 TempData["Error"] = "Cannot delete course. Students are already enrolled.";
@@ -517,6 +516,7 @@ namespace Student_Performance_Management_System.Controllers
             TempData["Success"] = "Course deleted successfully.";
             return RedirectToAction("Courses");
         }
+
 
         // ADD COURSE (GET)
         [HttpGet]
@@ -536,8 +536,10 @@ namespace Student_Performance_Management_System.Controllers
             _context.Courses.Add(course);
             _context.SaveChanges();
 
+            TempData["Success"] = "Course added successfully.";
             return RedirectToAction("Courses");
         }
+
 
         // student list
         public IActionResult CourseStudents(int id)
