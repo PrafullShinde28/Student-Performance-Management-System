@@ -1168,6 +1168,33 @@ namespace Student_Performance_Management_System.Controllers
         #endregion
 
         #region Performance card
+        public int GetStudentRank(int studentId, int courseId)
+        {
+            var students = _db.Students.Where(s => s.CourseId == courseId).Include(s => s.Marks).ToList();
+            var markList = students.Select(s => new StudentMarks
+            {
+                StudentId = s.StudentId,
+                TotalMarks = s.Marks.Sum(m => m.TotalMarks)
+            }
+            ).OrderByDescending(sm => sm.TotalMarks);
+
+            int rank = 0;
+            int prevMarks = -1;
+
+            foreach (var item in markList)
+            {
+                if (item.TotalMarks != prevMarks)
+                {
+                    rank++;
+                    prevMarks = item.TotalMarks;
+                }
+
+                if (item.StudentId == studentId)
+                    return rank;
+            }
+            return 0;// student not found
+        }
+
         public IActionResult ViewPerformanceCard(int id)
         {
             var student = _db.Students
@@ -1179,12 +1206,13 @@ namespace Student_Performance_Management_System.Controllers
             /*var subjects = _db.Students
                 .Include(s => s.Marks)
                     .ThenInclude(m => m.Subject).ToList();*/
-
+            int rank = GetStudentRank(id, student.CourseId);
             if (student == null)
                 return NotFound();
 
             var vm = new PerformanceCard
             {
+                Rank = rank,
                 StudentPRN = student.PRN,
                 StudentName = student.Name,
                 CourseName = student.Course.CourseName,
