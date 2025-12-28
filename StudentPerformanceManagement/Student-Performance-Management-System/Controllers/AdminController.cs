@@ -607,17 +607,7 @@ namespace Student_Performance_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddCourseGroup(AddCourseGroupVM model)
         {
-            if (!ModelState.IsValid)
-            {
-                model.Courses = _context.Courses
-                    .Select(c => new SelectListItem
-                    {
-                        Value = c.CourseId.ToString(),
-                        Text = c.CourseName
-                    }).ToList();
-
-                return View(model);
-            }
+           
 
             bool exists = _context.CourseGroups.Any(g =>
                 g.GroupName == model.CourseGroupName &&
@@ -667,8 +657,7 @@ namespace Student_Performance_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditCourseGroup(CourseGroup model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            
 
             var group = _context.CourseGroups.Find(model.CourseGroupId);
             if (group == null)
