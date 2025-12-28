@@ -851,125 +851,195 @@ namespace Student_Performance_Management_System.Controllers
         #region tasks
         public IActionResult Tasks()
         {
-            var tlist = _db.Tasks.Include(t => t.Course).Include(t => t.Subject).Include(t => t.CourseGroup).Include(t => t.Staff).ToList();
-            return View(tlist);
+            var tasks = _db.Tasks
+                .Include(t => t.Course)
+                .Include(t => t.Subject)
+                .Include(t => t.CourseGroup)
+                .Include(t => t.Staff)
+                .ToList();
+
+            return View(tasks);
         }
 
+
+        [HttpGet]
         [HttpGet]
         public IActionResult AddTask()
         {
-
-            var data = new AddTasksViewModel
+            var vm = new AddTasksViewModel
             {
-                Courses = _db.Courses.Select(c => new SelectListItem { Value = c.CourseId.ToString(), Text = c.CourseName }).ToList(),
-                CourseGroups = _db.CourseGroups.Select(c => new SelectListItem { Value = c.CourseGroupId.ToString(), Text = c.GroupName }).ToList(),
-                Subjects = _db.Subjects.Select(s => new SelectListItem { Value = s.SubjectId.ToString(), Text = s.SubjectName }).ToList(),
-                Staffs = _db.Staffs.Select(s => new SelectListItem { Value = s.StaffId.ToString(), Text = s.Name }).ToList()
+                Courses = _db.Courses
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.CourseId.ToString(),
+                        Text = c.CourseName
+                    }).ToList(),
+
+                Staffs = _db.Staffs
+                    .Select(s => new SelectListItem
+                    {
+                        Value = s.StaffId.ToString(),
+                        Text = s.Name
+                    }).ToList(),
+
+                CourseGroups = new List<SelectListItem>(),
+                Subjects = new List<SelectListItem>()
             };
-            return View(data);
+
+            return View(vm);
         }
+
 
         [HttpPost]
-        public async Task<IActionResult> AddTask(AddTask t)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTask(AddTask model)
         {
-            var task = new Tasks()
+            if (!ModelState.IsValid)
             {
-                Title = t.Title,
-                Description = t.Description,
-                StaffId = t.StaffId,
-                CourseId = t.CourseId,
-                SubjectId = t.SubjectId,
-                CourseGroupId = t.CourseGroupId,
-                ValidFrom = t.ValidFrom,
-                ValidTo = t.ValidTo,
+                TempData["Error"] = "Please fill all required fields.";
+                return RedirectToAction("AddTask");
+            }
+
+            var task = new Tasks
+            {
+                Title = model.Title,
+                Description = model.Description,
+                StaffId = model.StaffId,
+                CourseId = model.CourseId,
+                CourseGroupId = model.CourseGroupId,
+                SubjectId = model.SubjectId,
+                ValidFrom = model.ValidFrom,
+                ValidTo = model.ValidTo,
                 Status = Status.Pending
             };
+
             _db.Tasks.Add(task);
             await _db.SaveChangesAsync();
-            return RedirectToAction("Tasks", "Admin");
-        }
-        public IActionResult GetSubjectsByCourse(int courseId)
-        {
-            var subjects = _context.Subjects
-        .Where(s => s.CourseId == courseId)
-        .Select(s => new
-        {
-            subjectId = s.SubjectId,
-            subjectName = s.SubjectName
-        })
-        .ToList();
 
-            return Json(subjects);
-        }
-
-        public IActionResult GetGroupsByCourse(int courseId)
-        {
-            var subjects = _context.CourseGroups
-        .Where(s => s.CourseId == courseId)
-        .Select(s => new
-        {
-            courseGroupId = s.CourseGroupId,
-            groupName = s.GroupName
-        })
-        .ToList();
-
-            return Json(subjects);
+            TempData["Success"] = "Task added successfully.";
+            return RedirectToAction("Tasks");
         }
 
         [HttpGet]
-        public JsonResult GetSubjectsByCourses(int courseId)
+        public IActionResult GetSubjectsByCourse(int courseId)
         {
-            var subjects = _context.Subjects
+            var subjects = _db.Subjects
                 .Where(s => s.CourseId == courseId)
                 .Select(s => new
                 {
-                    s.SubjectId,
-                    s.SubjectName
+                    subjectId = s.SubjectId,
+                    subjectName = s.SubjectName
                 }).ToList();
 
             return Json(subjects);
         }
 
+
+        [HttpGet]
+        public IActionResult GetGroupsByCourse(int courseId)
+        {
+            var groups = _db.CourseGroups
+                .Where(g => g.CourseId == courseId)
+                .Select(g => new
+                {
+                    courseGroupId = g.CourseGroupId,
+                    groupName = g.GroupName
+                }).ToList();
+
+            return Json(groups);
+        }
+
+        [HttpGet]
         public IActionResult EditTask(int id)
         {
-            var t = _db.Tasks.Find(id);
-            ViewBag.TaskTitle = t.Title;
-            ViewBag.Description = t.Description;
-            ViewBag.Id = t.TasksId;
-            var data = new AddTasksViewModel
+            var task = _db.Tasks.Find(id);
+            if (task == null)
             {
-                Courses = _db.Courses.Select(c => new SelectListItem { Value = c.CourseId.ToString(), Text = c.CourseName }).ToList(),
-                CourseGroups = _db.CourseGroups.Select(c => new SelectListItem { Value = c.CourseGroupId.ToString(), Text = c.GroupName }).ToList(),
-                Subjects = _db.Subjects.Select(s => new SelectListItem { Value = s.SubjectId.ToString(), Text = s.SubjectName }).ToList(),
-                Staffs = _db.Staffs.Select(s => new SelectListItem { Value = s.StaffId.ToString(), Text = s.Name }).ToList()
+                TempData["Error"] = "Task not found.";
+                return RedirectToAction("Tasks");
+            }
+
+            ViewBag.TaskTitle = task.Title;
+            ViewBag.Description = task.Description;
+            ViewBag.Id = task.TasksId;
+
+            var vm = new AddTasksViewModel
+            {
+                Courses = _db.Courses.Select(c => new SelectListItem
+                {
+                    Value = c.CourseId.ToString(),
+                    Text = c.CourseName
+                }).ToList(),
+
+                Staffs = _db.Staffs.Select(s => new SelectListItem
+                {
+                    Value = s.StaffId.ToString(),
+                    Text = s.Name
+                }).ToList(),
+
+                CourseGroups = _db.CourseGroups.Select(g => new SelectListItem
+                {
+                    Value = g.CourseGroupId.ToString(),
+                    Text = g.GroupName
+                }).ToList(),
+
+                Subjects = _db.Subjects.Select(s => new SelectListItem
+                {
+                    Value = s.SubjectId.ToString(),
+                    Text = s.SubjectName
+                }).ToList()
             };
-            return View(data);
+
+            return View(vm);
         }
+
 
         [HttpPost]
-        public async Task<IActionResult> EditTask(EditTaskVM t)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditTask(EditTaskVM model)
         {
-            var tsk = _db.Tasks.Find(t.Id);
-            tsk.Title = t.Title;
-            tsk.Description = t.Description;
-            tsk.CourseGroupId = t.CourseGroupId;
-            tsk.SubjectId = t.SubjectId;
-            tsk.StaffId = t.StaffId;
-            tsk.CourseId = t.CourseId;
-            tsk.ValidFrom = t.ValidFrom;
-            tsk.ValidTo = t.ValidTo;
+            var task = _db.Tasks.Find(model.Id);
+            if (task == null)
+            {
+                TempData["Error"] = "Task not found.";
+                return RedirectToAction("Tasks");
+            }
+
+            task.Title = model.Title;
+            task.Description = model.Description;
+            task.CourseId = model.CourseId;
+            task.CourseGroupId = model.CourseGroupId;
+            task.SubjectId = model.SubjectId;
+            task.StaffId = model.StaffId;
+            task.ValidFrom = model.ValidFrom;
+            task.ValidTo = model.ValidTo;
+
             await _db.SaveChangesAsync();
-            return RedirectToAction("Tasks", "Admin");
-        }
 
-
-        public IActionResult DeleteTask(int id)
-        {
-            var t = _db.Tasks.Find(id);
-            _db.Tasks.Remove(t);
-            _db.SaveChanges();
+            TempData["Success"] = "Task updated successfully.";
             return RedirectToAction("Tasks");
         }
+
+
+
+       [HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult DeleteTask(int id)
+{
+    var task = _db.Tasks.Find(id);
+    if (task == null)
+    {
+        TempData["Error"] = "Task not found.";
+        return RedirectToAction("Tasks");
+    }
+
+    _db.Tasks.Remove(task);
+    _db.SaveChanges();
+
+    TempData["Success"] = "Task deleted successfully.";
+    return RedirectToAction("Tasks");
+}
+
 
         #endregion
 
