@@ -297,7 +297,6 @@ namespace Student_Performance_Management_System.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddStaff(string name, string email, string mobileNo)
         {
-
             var tempPassword = "Temp@123";
 
             var user = new AppUser
@@ -312,14 +311,11 @@ namespace Student_Performance_Management_System.Controllers
 
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError("", error.Description);
-
-                return View();
+                TempData["Error"] = result.Errors.First().Description;
+                return RedirectToAction("AddStaff");
             }
 
             await _userManager.AddToRoleAsync(user, "Staff");
-
 
             var staff = new Staff
             {
@@ -332,16 +328,15 @@ namespace Student_Performance_Management_System.Controllers
             _context.Staffs.Add(staff);
             await _context.SaveChangesAsync();
 
-
             string finalPassword = $"{staff.StaffId}@Sunbeam";
-
 
             await _userManager.RemovePasswordAsync(user);
             await _userManager.AddPasswordAsync(user, finalPassword);
 
-            TempData["Success"] = $"Staff added. Default Password: {finalPassword}";
+            TempData["Success"] = $"Staff added successfully. Password: {finalPassword}";
             return RedirectToAction("Staff");
         }
+
 
         [HttpGet]
         public IActionResult EditStaff(int id)
@@ -372,7 +367,7 @@ namespace Student_Performance_Management_System.Controllers
             staff.MobileNo = model.MobileNo;
 
             _context.SaveChanges();
-
+            TempData["Success"] = "Staff updated successfully.";
             return RedirectToAction("Staff");
         }
 
@@ -391,7 +386,7 @@ namespace Student_Performance_Management_System.Controllers
 
             if (hasTasks)
             {
-                TempData["Error"] = "Cannot delete this staff member because tasks are assigned to them.";
+                TempData["Error"] = "Cannot delete staff. Tasks are assigned.";
                 return RedirectToAction("Staff");
             }
 

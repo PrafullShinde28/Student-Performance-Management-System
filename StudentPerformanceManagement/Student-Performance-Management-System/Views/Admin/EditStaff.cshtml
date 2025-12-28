@@ -25,7 +25,7 @@
             <div class="card shadow border-0 rounded-4">
                 <div class="card-body p-4">
 
-                    <form asp-action="EditStaff" method="post">
+                    <form asp-action="EditStaff" method="post" novalidate>
                         @Html.AntiForgeryToken()
 
                         <input type="hidden" asp-for="StaffId" />
@@ -33,20 +33,22 @@
 
                         <!-- Name -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Name</label>
-                            <input asp-for="Name" class="form-control" required />
+                            <label asp-for="Name" class="form-label fw-semibold"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
                         </div>
 
                         <!-- Email -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Email</label>
+                            <label asp-for="Email" class="form-label fw-semibold"></label>
                             <input asp-for="Email" class="form-control" readonly />
                         </div>
 
                         <!-- Mobile -->
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Mobile Number</label>
-                            <input asp-for="MobileNo" class="form-control" required />
+                            <label asp-for="MobileNo" class="form-label fw-semibold"></label>
+                            <input asp-for="MobileNo" class="form-control" />
+                            <span asp-validation-for="MobileNo" class="text-danger small"></span>
                         </div>
 
                         <!-- Buttons -->
@@ -65,3 +67,7 @@
     </div>
 
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
