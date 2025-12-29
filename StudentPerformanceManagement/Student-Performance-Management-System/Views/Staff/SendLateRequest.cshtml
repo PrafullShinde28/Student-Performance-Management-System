@@ -1,0 +1,58 @@
+﻿@model Student_Performance_Management_System.Models.Tasks
+@{
+    ViewData["Title"] = "Request Extension";
+    Layout = "_StaffLayout";
+}
+
+<div class="container-fluid py-5 d-flex justify-content-center">
+    <div class="col-lg-5 col-md-7">
+
+        <div class="card border-0 shadow rounded-4 overflow-hidden">
+
+            <!-- Header -->
+            <div class="card-header bg-danger-subtle text-danger fw-semibold py-3 px-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                Late Submission Request
+            </div>
+
+            <!-- Body -->
+            <div class="card-body p-4">
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-muted">Task Title</label>
+                    <input type="text" class="form-control" value="@Model.Title" disabled />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-muted">Deadline</label>
+                    <input type="text" class="form-control"
+                           value="@Model.ValidTo.ToString("dd MMM yyyy")" disabled />
+                </div>
+
+                <form method="post">
+                    <input type="hidden" name="TasksId" value="@Model.TasksId" />
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Reason for Delay</label>
+                        <textarea name="Description" rows="4"
+                                  class="form-control"
+                                  placeholder="Explain why the task could not be completed on time..."
+                                  required></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Dashboard" class="btn btn-light rounded-pill px-4">
+                            <i class="bi bi-arrow-left"></i> Cancel
+                        </a>
+
+                        <button type="submit" class="btn btn-danger rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-envelope-paper-fill me-1"></i> Send Request
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
