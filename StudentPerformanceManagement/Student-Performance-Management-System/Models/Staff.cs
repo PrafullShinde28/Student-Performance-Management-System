@@ -6,23 +6,17 @@ namespace Student_Performance_Management_System.Models
     public class Staff
     {
         public int StaffId { get; set; }
-
-        [Required(ErrorMessage = "Name is required")]
+        [Required]
+        [MaxLength(100)]
         public string Name { get; set; }
-        public string ProfileImage { get; set; }
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Enter valid email")]
-
-        
+        [Required]
+        [MaxLength(100)]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Mobile number is required")]
-        [RegularExpression(@"^\d{10}$", ErrorMessage = "Mobile number must be 10 digits")]
+        [MaxLength(10)]
         public string MobileNo { get; set; }
-
+        public ICollection<Tasks> Tasks { get; set; } = new List<Tasks>();
         public string AppUserId { get; set; }
         public AppUser AppUser { get; set; }
-
-        public ICollection<Tasks> Tasks { get; set; } = new List<Tasks>();
     }
 }

@@ -15,7 +15,6 @@ namespace Student_Performance_Management_System.ViewModel
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@gmail\.com$",
             ErrorMessage = "Email must end with @gmail.com")]
         public string Email { get; set; }
-        public IFormFile ProfileImage { get; set; }
 
         // ✅ MOBILE REQUIRED + EXACTLY 10 DIGITS
         [Required(ErrorMessage = "Mobile number is required")]

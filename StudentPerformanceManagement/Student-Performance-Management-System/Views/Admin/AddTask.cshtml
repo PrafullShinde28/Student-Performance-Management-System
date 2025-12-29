@@ -1,170 +1,74 @@
-﻿@model Student_Performance_Management_System.ViewModel.AddTasksViewModel
+﻿@model Student_Performance_Management_System.ViewModel.AddTasksViewModel;
 
 @{
-    ViewData["Title"] = "Add Task";
+    ViewData["Title"] = "AddTask";
     Layout = "_AdminLayout";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-semibold text-primary">
-        <i class="bi bi-plus-square"></i> Add Task
-    </h4>
+<h1>AddTask</h1>
 
-    <a asp-action="Tasks" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Back
-    </a>
-</div>
-
+<h4>Tasks</h4>
 <hr />
-
 <div class="row justify-content-center">
-    <div class="col-lg-6 col-md-8">
-        <div class="card shadow border-0 rounded-4">
-            <div class="card-body p-4">
-
-                <form asp-action="AddTask" method="post">
-
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-                    <!-- TITLE -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Title</label>
-                        <input name="Title" class="form-control" required />
-                    </div>
-
-                    <!-- DESCRIPTION -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Description</label>
-                        <textarea name="Description" class="form-control" rows="3" required></textarea>
-                    </div>
-
-                    <!-- STAFF -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Staff</label>
-                        <select asp-for="StaffId"
-                                asp-items="Model.Staffs"
-                                class="form-select"
-                                required>
-                            <option value="">-- Select Staff --</option>
-                        </select>
-                    </div>
-
-                    <!-- COURSE -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Course</label>
-                        <select asp-for="CourseId"
-                                asp-items="Model.Courses"
-                                class="form-select"
-                                id="courseDropdown"
-                                required>
-                            <option value="">-- Select Course --</option>
-                        </select>
-                    </div>
-
-                    <!-- COURSE GROUP -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Course Group</label>
-                        <select asp-for="CourseGroupId"
-                                class="form-select"
-                                id="groupDropdown"
-                                required>
-                            <option value="">-- Select Course Group --</option>
-                        </select>
-                    </div>
-
-                    <!-- SUBJECT -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Subject</label>
-                        <select asp-for="SubjectId"
-                                class="form-select"
-                                id="subjectDropdown"
-                                required>
-                            <option value="">-- Select Subject --</option>
-                        </select>
-                    </div>
-
-                    <!-- VALID FROM -->
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Valid From</label>
-                        <input type="date" name="ValidFrom" class="form-control" required />
-                    </div>
-
-                    <!-- VALID TO -->
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">Valid To</label>
-                        <input type="date" name="ValidTo" class="form-control" required />
-                    </div>
-
-                    <!-- SUBMIT -->
-                    <div class="d-flex justify-content-end">
-                        <button type="submit"
-                                class="btn btn-primary px-4"
-                                id="submitBtn"
-                                disabled>
-                            <i class="bi bi-save"></i> Save Task
-                        </button>
-                    </div>
-
-                </form>
-
+    <div class="col-md-4 ">
+        <form asp-action="AddTask">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" name="Title" class="form-control" required />
             </div>
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <input type="text" name="Description" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Staff</label>
+                <select asp-for="StaffId"
+                        asp-items="Model.Staffs"
+                        class="form-control">
+                    <option value="">-- Select Staff --</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Course</label>
+                <select asp-for="CourseId"
+                        asp-items="Model.Courses"
+                        class="form-control">
+                    <option value="">-- Select Course --</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Course Group</label>
+                <select asp-for="CourseGroupId"
+                        asp-items="Model.CourseGroups"
+                        class="form-control">
+                    <option value="">-- Select Course Group --</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Subject</label>
+                <select asp-for="SubjectId"
+                        asp-items="Model.Subjects"
+                        class="form-control">
+                    <option value="">-- Select Subject --</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Valid From</label>
+                <input type="date" name="ValidFrom" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Valid To</label>
+                <input type="date" name="ValidTo" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Add" class="btn btn-primary" />
+            </div>
+        </form>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
 
-<script>
-    function validateForm() {
-        let valid =
-            $('#courseDropdown').val() &&
-            $('#groupDropdown').val() &&
-            $('#subjectDropdown').val();
-
-        $('#submitBtn').prop('disabled', !valid);
-    }
-
-    $('#courseDropdown').change(function () {
-
-        let courseId = $(this).val();
-
-        $('#groupDropdown')
-            .empty()
-            .append('<option value="">-- Select Group --</option>');
-
-        $('#subjectDropdown')
-            .empty()
-            .append('<option value="">-- Select Subject --</option>');
-
-        if (courseId) {
-
-            // Load Groups
-            $.get('/Admin/GetGroupsByCourse', { courseId }, function (data) {
-                $.each(data, function (i, item) {
-                    $('#groupDropdown').append(
-                        `<option value="${item.courseGroupId}">${item.groupName}</option>`
-                    );
-                });
-            });
-
-            // Load Subjects
-            $.get('/Admin/GetSubjectsByCourse', { courseId }, function (data) {
-                $.each(data, function (i, item) {
-                    $('#subjectDropdown').append(
-                        `<option value="${item.subjectId}">${item.subjectName}</option>`
-                    );
-                });
-            });
-        }
-
-        validateForm();
-    });
-
-    $('#groupDropdown, #subjectDropdown').change(validateForm);
-</script>
-<script>
-    
-    $(document).ready(function () {
-        validateForm();
-    });
-</script>

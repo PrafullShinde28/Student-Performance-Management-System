@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Student_Performance_Management_System.Models;
 using Student_Performance_Management_System.ViewModel;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Student_Performance_Management_System.Controllers
 {
@@ -17,7 +16,7 @@ namespace Student_Performance_Management_System.Controllers
         private readonly IEmailSender _emailSender;
 
         public AdminController(UserManager<AppUser> userManager,
-                               ApplicationDbContext context, ApplicationDbContext db, IEmailSender emailSender)
+                               ApplicationDbContext context, ApplicationDbContext db , IEmailSender emailSender)
         {
             _userManager = userManager;
             _context = context;
@@ -30,29 +29,6 @@ namespace Student_Performance_Management_System.Controllers
         }
 
         #region Student
-
-        private async Task<string> SaveProfileImageAsync(IFormFile? profileImage)
-        {
-            if (profileImage == null || profileImage.Length == 0)
-                return string.Empty;
-
-            // Generate unique file name
-            var fileName = $"{Guid.NewGuid()}_{profileImage.FileName}";
-            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
-
-            // Ensure uploads folder exists
-            Directory.CreateDirectory(Path.GetDirectoryName(uploadPath)!);
-
-            // Save file
-            using (var stream = new FileStream(uploadPath, FileMode.Create))
-            {
-                await profileImage.CopyToAsync(stream);
-            }
-
-            // Return relative path to store in DB
-            return $"/uploads/{fileName}";
-
-        }
 
         public IActionResult Students()
         {
@@ -140,7 +116,6 @@ namespace Student_Performance_Management_System.Controllers
             TempData["Success"] = "Student updated successfully.";
             return RedirectToAction("Students");
         }
-
 
 
         // DELETE STUDENT (POST)
@@ -253,9 +228,6 @@ namespace Student_Performance_Management_System.Controllers
 
             var result = await _userManager.CreateAsync(user, defaultPassword);
 
-            string profileImagePath = await SaveProfileImageAsync(model.ProfileImage);
-
-
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "Student");
@@ -269,7 +241,7 @@ namespace Student_Performance_Management_System.Controllers
                     MobileNo = model.MobileNo,
                     CourseId = model.CourseId,
                     CourseGroupId = model.CourseGroupId,
-                    ProfileImagePath = profileImagePath
+                    ProfileImagePath = model.ProfileImagePath
                 };
 
                 _context.Students.Add(student);
@@ -278,15 +250,19 @@ namespace Student_Performance_Management_System.Controllers
 
                 var subject = "Student enrolled sucessfully";
                 var body = $@"
-                          Dear, {model.Name} <br/>
-                          You have been Enrolled successfully. <br/>
-                          UserName: <b> {student.PRN} </b><br/>
-                          Password: <b>{defaultPassword}  </b><br/><br/>
-                          Regards, <br/>
-                          Admin Team  
-                        ";
-                await _emailSender.SendEmailAsync(model.Email, subject, body);
+                      Dear, {model.Name} <br/>
+                      You have been Enrolled successfully. <br/>
+                      UserName: <b> {student.PRN} </b><br/>
+                      Password: <b>{defaultPassword}  </b><br/><br/>
+                      Regards, <br/>
+                      Admin Team  
+                    ";
+
+                await _emailSender.SendEmailAsync(model.Email,subject,body);
+                    
+
                 return RedirectToAction("Students");
+
             }
 
             return View(model);
@@ -335,8 +311,9 @@ namespace Student_Performance_Management_System.Controllers
         // ADD STAFF (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddStaff(string name, string email, string mobileNo, IFormFile ProfileImage)
+        public async Task<IActionResult> AddStaff(string name, string email, string mobileNo)
         {
+
             var tempPassword = "Temp@123";
 
             var user = new AppUser
@@ -348,38 +325,49 @@ namespace Student_Performance_Management_System.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, tempPassword);
-            string profileImagePath = await SaveProfileImageAsync(ProfileImage);
 
             if (!result.Succeeded)
             {
-                TempData["Error"] = result.Errors.First().Description;
-                return RedirectToAction("AddStaff");
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+
+                return View();
             }
 
             await _userManager.AddToRoleAsync(user, "Staff");
+
 
             var staff = new Staff
             {
                 Name = name,
                 Email = email,
                 MobileNo = mobileNo,
-                AppUserId = user.Id,
-                ProfileImage = profileImagePath
-
+                AppUserId = user.Id
             };
 
             _context.Staffs.Add(staff);
             await _context.SaveChangesAsync();
 
+
             string finalPassword = $"{staff.StaffId}@Sunbeam";
+
 
             await _userManager.RemovePasswordAsync(user);
             await _userManager.AddPasswordAsync(user, finalPassword);
 
-            TempData["Success"] = $"Staff added successfully. Password: {finalPassword}";
+            TempData["Success"] = $"Staff added. Default Password: {finalPassword}";
+            var subject1 = "Student enrolled sucessfully";
+            var body = $@"
+                      Dear, {staff.Name} <br/>
+                      You have been Enrolled successfully. <br/>
+                      UserName: <b> {staff.Email} </b><br/>
+                      Password: <b>{finalPassword}  </b><br/><br/>
+                      Regards, <br/>
+                      Admin Team  
+                    ";
+            await _emailSender.SendEmailAsync(staff.Email, subject1, body);
             return RedirectToAction("Staff");
         }
-
 
         [HttpGet]
         public IActionResult EditStaff(int id)
@@ -410,7 +398,7 @@ namespace Student_Performance_Management_System.Controllers
             staff.MobileNo = model.MobileNo;
 
             _context.SaveChanges();
-            TempData["Success"] = "Staff updated successfully.";
+
             return RedirectToAction("Staff");
         }
 
@@ -429,7 +417,7 @@ namespace Student_Performance_Management_System.Controllers
 
             if (hasTasks)
             {
-                TempData["Error"] = "Cannot delete staff. Tasks are assigned.";
+                TempData["Error"] = "Cannot delete this staff member because tasks are assigned to them.";
                 return RedirectToAction("Staff");
             }
 
@@ -894,14 +882,8 @@ namespace Student_Performance_Management_System.Controllers
         #region tasks
         public IActionResult Tasks()
         {
-            var tasks = _db.Tasks
-                .Include(t => t.Course)
-                .Include(t => t.Subject)
-                .Include(t => t.CourseGroup)
-                .Include(t => t.Staff)
-                .ToList();
-
-            return View(tasks);
+            var tlist = _db.Tasks.Include(t => t.Course).Include(t => t.Subject).Include(t => t.CourseGroup).Include(t => t.Staff).ToList();
+            return View(tlist);
         }
 
         private void UpdateOverdueTasks()
@@ -925,7 +907,7 @@ namespace Student_Performance_Management_System.Controllers
 
         public IActionResult LateRequests()
         {
-            UpdateOverdueTasks();
+            UpdateOverdueTasks();  
 
             var list = _db.Tasks
                 .Include(t => t.Staff)
@@ -942,8 +924,8 @@ namespace Student_Performance_Management_System.Controllers
             var task = _db.Tasks.Find(id);
 
             task.ValidTo = task.ValidTo.AddDays(3);
-            task.Status = Status.Pending;
-
+            task.Status = Status.Pending;  
+                                           
 
             _db.SaveChanges();
             return RedirectToAction("LateRequests");
@@ -961,180 +943,118 @@ namespace Student_Performance_Management_System.Controllers
         [HttpGet]
         public IActionResult AddTask()
         {
-            var vm = new AddTasksViewModel
+
+            var data = new AddTasksViewModel
             {
-                Courses = _db.Courses
-                    .Select(c => new SelectListItem
-                    {
-                        Value = c.CourseId.ToString(),
-                        Text = c.CourseName
-                    }).ToList(),
-
-                Staffs = _db.Staffs
-                    .Select(s => new SelectListItem
-                    {
-                        Value = s.StaffId.ToString(),
-                        Text = s.Name
-                    }).ToList(),
-
-                CourseGroups = new List<SelectListItem>(),
-                Subjects = new List<SelectListItem>()
+                Courses = _db.Courses.Select(c => new SelectListItem { Value = c.CourseId.ToString(), Text = c.CourseName }).ToList(),
+                CourseGroups = _db.CourseGroups.Select(c => new SelectListItem { Value = c.CourseGroupId.ToString(), Text = c.GroupName }).ToList(),
+                Subjects = _db.Subjects.Select(s => new SelectListItem { Value = s.SubjectId.ToString(), Text = s.SubjectName }).ToList(),
+                Staffs = _db.Staffs.Select(s => new SelectListItem { Value = s.StaffId.ToString(), Text = s.Name }).ToList()
             };
-
-            return View(vm);
+            return View(data);
         }
 
-
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddTask(AddTask model)
+        public async Task<IActionResult> AddTask(AddTask t)
         {
-            if (!ModelState.IsValid)
+            var task = new Tasks()
             {
-                TempData["Error"] = "Please fill all required fields.";
-                return RedirectToAction("AddTask");
-            }
-
-            var task = new Tasks
-            {
-                Title = model.Title,
-                Description = model.Description,
-                StaffId = model.StaffId,
-                CourseId = model.CourseId,
-                CourseGroupId = model.CourseGroupId,
-                SubjectId = model.SubjectId,
-                ValidFrom = model.ValidFrom,
-                ValidTo = model.ValidTo,
+                Title = t.Title,
+                Description = t.Description,
+                StaffId = t.StaffId,
+                CourseId = t.CourseId,
+                SubjectId = t.SubjectId,
+                CourseGroupId = t.CourseGroupId,
+                ValidFrom = t.ValidFrom,
+                ValidTo = t.ValidTo,
                 Status = Status.Pending
             };
-
             _db.Tasks.Add(task);
             await _db.SaveChangesAsync();
+            return RedirectToAction("Tasks", "Admin");
+        }
+        public IActionResult GetSubjectsByCourse(int courseId)
+        {
+            var subjects = _context.Subjects
+        .Where(s => s.CourseId == courseId)
+        .Select(s => new
+        {
+            subjectId = s.SubjectId,
+            subjectName = s.SubjectName
+        })
+        .ToList();
 
-            TempData["Success"] = "Task added successfully.";
-            return RedirectToAction("Tasks");
+            return Json(subjects);
+        }
+
+        public IActionResult GetGroupsByCourse(int courseId)
+        {
+            var subjects = _context.CourseGroups
+        .Where(s => s.CourseId == courseId)
+        .Select(s => new
+        {
+            courseGroupId = s.CourseGroupId,
+            groupName = s.GroupName
+        })
+        .ToList();
+
+            return Json(subjects);
         }
 
         [HttpGet]
-        public IActionResult GetSubjectsByCourse(int courseId)
+        public JsonResult GetSubjectsByCourses(int courseId)
         {
-            var subjects = _db.Subjects
+            var subjects = _context.Subjects
                 .Where(s => s.CourseId == courseId)
                 .Select(s => new
                 {
-                    subjectId = s.SubjectId,
-                    subjectName = s.SubjectName
+                    s.SubjectId,
+                    s.SubjectName
                 }).ToList();
 
             return Json(subjects);
         }
 
-
-        [HttpGet]
-        public IActionResult GetGroupsByCourse(int courseId)
-        {
-            var groups = _db.CourseGroups
-                .Where(g => g.CourseId == courseId)
-                .Select(g => new
-                {
-                    courseGroupId = g.CourseGroupId,
-                    groupName = g.GroupName
-                }).ToList();
-
-            return Json(groups);
-        }
-
-        [HttpGet]
         public IActionResult EditTask(int id)
         {
-            var task = _db.Tasks.Find(id);
-            if (task == null)
+            var t = _db.Tasks.Find(id);
+            ViewBag.TaskTitle = t.Title;
+            ViewBag.Description = t.Description;
+            ViewBag.Id = t.TasksId;
+            var data = new AddTasksViewModel
             {
-                TempData["Error"] = "Task not found.";
-                return RedirectToAction("Tasks");
-            }
-
-            ViewBag.TaskTitle = task.Title;
-            ViewBag.Description = task.Description;
-            ViewBag.Id = task.TasksId;
-
-            var vm = new AddTasksViewModel
-            {
-                Courses = _db.Courses.Select(c => new SelectListItem
-                {
-                    Value = c.CourseId.ToString(),
-                    Text = c.CourseName
-                }).ToList(),
-
-                Staffs = _db.Staffs.Select(s => new SelectListItem
-                {
-                    Value = s.StaffId.ToString(),
-                    Text = s.Name
-                }).ToList(),
-
-                CourseGroups = _db.CourseGroups.Select(g => new SelectListItem
-                {
-                    Value = g.CourseGroupId.ToString(),
-                    Text = g.GroupName
-                }).ToList(),
-
-                Subjects = _db.Subjects.Select(s => new SelectListItem
-                {
-                    Value = s.SubjectId.ToString(),
-                    Text = s.SubjectName
-                }).ToList()
+                Courses = _db.Courses.Select(c => new SelectListItem { Value = c.CourseId.ToString(), Text = c.CourseName }).ToList(),
+                CourseGroups = _db.CourseGroups.Select(c => new SelectListItem { Value = c.CourseGroupId.ToString(), Text = c.GroupName }).ToList(),
+                Subjects = _db.Subjects.Select(s => new SelectListItem { Value = s.SubjectId.ToString(), Text = s.SubjectName }).ToList(),
+                Staffs = _db.Staffs.Select(s => new SelectListItem { Value = s.StaffId.ToString(), Text = s.Name }).ToList()
             };
-
-            return View(vm);
+            return View(data);
         }
-
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditTask(EditTaskVM model)
+        public async Task<IActionResult> EditTask(EditTaskVM t)
         {
-            var task = _db.Tasks.Find(model.Id);
-            if (task == null)
-            {
-                TempData["Error"] = "Task not found.";
-                return RedirectToAction("Tasks");
-            }
-
-            task.Title = model.Title;
-            task.Description = model.Description;
-            task.CourseId = model.CourseId;
-            task.CourseGroupId = model.CourseGroupId;
-            task.SubjectId = model.SubjectId;
-            task.StaffId = model.StaffId;
-            task.ValidFrom = model.ValidFrom;
-            task.ValidTo = model.ValidTo;
-
+            var tsk = _db.Tasks.Find(t.Id);
+            tsk.Title = t.Title;
+            tsk.Description = t.Description;
+            tsk.CourseGroupId = t.CourseGroupId;
+            tsk.SubjectId = t.SubjectId;
+            tsk.StaffId = t.StaffId;
+            tsk.CourseId = t.CourseId;
+            tsk.ValidFrom = t.ValidFrom;
+            tsk.ValidTo = t.ValidTo;
             await _db.SaveChangesAsync();
-
-            TempData["Success"] = "Task updated successfully.";
-            return RedirectToAction("Tasks");
+            return RedirectToAction("Tasks", "Admin");
         }
 
 
-
-       [HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult DeleteTask(int id)
-{
-    var task = _db.Tasks.Find(id);
-    if (task == null)
-    {
-        TempData["Error"] = "Task not found.";
-        return RedirectToAction("Tasks");
-    }
-
-    _db.Tasks.Remove(task);
-    _db.SaveChanges();
-
-    TempData["Success"] = "Task deleted successfully.";
-    return RedirectToAction("Tasks");
-}
-
+        public IActionResult DeleteTask(int id)
+        {
+            var t = _db.Tasks.Find(id);
+            _db.Tasks.Remove(t);
+            _db.SaveChanges();
+            return RedirectToAction("Tasks");
+        }
 
         #endregion
 

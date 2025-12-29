@@ -1,7 +1,7 @@
 ﻿using Student_Performance_Management_System.Models;
 using System.ComponentModel;
 
-namespace Student_Performance_Management_System.ViewModel
+namespace StudentPerformanceManagment.ViewModel
 {
     public class MarkViewModel
     {

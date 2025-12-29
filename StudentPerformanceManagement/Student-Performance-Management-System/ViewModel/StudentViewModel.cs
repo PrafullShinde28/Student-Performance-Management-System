@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Student_Performance_Management_System.ViewModel
+namespace StudentPerformanceManagment.ViewModel
 {
     public class StudentViewModel
     {
@@ -11,7 +11,7 @@ namespace Student_Performance_Management_System.ViewModel
         public string Email { get; set; }
         public string MobileNo { get; set; }
         public string CourseName { get; set; }
-        public string? Profile { get; set; }
+
         public int SubjectCount { get; set; }
         public string CourseGroupName { get; set; }
 
