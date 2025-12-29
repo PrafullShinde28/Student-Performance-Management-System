@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Student_Performance_Management_System.Models;
 using Student_Performance_Management_System.ViewModel;
+using StudentPerformanceManagment.ViewModel;
 using System.Security.Claims;
 
 
@@ -123,6 +124,45 @@ namespace Student_Performance_Management_System.Controllers
             return 0;// student not found
         }
 
-      
+        public IActionResult ChangePassword()
+        {
+
+            return View(new PasswordViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdatePassword(PasswordViewModel model)
+        {
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login", "Account");
+
+
+            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+            if (result.Succeeded)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+                TempData["Success"] = "Password updated successfully!";
+                return RedirectToAction("Dashboard", "Student");
+            }
+
+            foreach (var error in result.Errors)
+            {
+
+                if (error.Code.Contains("PasswordMismatch"))
+                {
+                    ModelState.AddModelError("CurrentPassword", "The current password you entered is incorrect.");
+                }
+                else
+                {
+
+                    ModelState.AddModelError("NewPassword", error.Description);
+                }
+            }
+
+            return View("ChangePassword", model);
+        }
     }
 }

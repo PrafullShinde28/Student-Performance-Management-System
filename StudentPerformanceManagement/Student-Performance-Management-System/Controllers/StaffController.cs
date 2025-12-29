@@ -24,6 +24,72 @@ namespace Student_Performance_Management_System.Controllers
             _userManager = userManager;
             _context = context;
         }
+
+        public async Task<IActionResult> Dashboard()
+        {
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            var myTasks = await _context.Tasks
+                .Include(t => t.Course)
+                .Include(t => t.Subject)
+                .Include(t => t.CourseGroup)
+                .Where(t => t.Staff.AppUserId == userId)
+                .ToListAsync();
+
+            var vm = new StaffDashViewModel
+            {
+
+                // StaffDashViewModel properties
+                StaffId = userId,
+                StaffName = user?.UserName,
+                TaskCount = myTasks.Count,
+                Tasks = myTasks
+            };
+            return View("Dashboard", vm);   // YAHAN StaffDashViewModel hi return karo
+        }
+
+        public IActionResult AddMark(int id)
+
+        {
+
+            // id = 3;
+            var task = _context.Tasks.Include(c => c.Course)
+                .Include(cg => cg.CourseGroup)
+                .Include(s => s.Subject)
+                .Where(t => t.TasksId == id).FirstOrDefault();
+
+
+            var students = _context.Students.Where(s => s.CourseGroupId == task.CourseGroupId)
+                .Select(s => new MarkViewModel
+                {
+
+                    StudentId = s.StudentId,
+                    SubjectId = task.SubjectId,
+                    CourseGroupId = task.CourseGroupId,
+                    // CourseId = task.CourseId,
+                    PRN = s.PRN,
+                    Name = s.Name,
+                    TaskId = task.TasksId,
+                    TheoryMarks = _context.Marks.Where(m => m.TasksId == task.TasksId && m.StudentId == s.StudentId)
+                                    .Select(m => m.TheoryMarks).FirstOrDefault(),
+
+
+                    LabMarks = _context.Marks.Where(m => m.TasksId == task.TasksId && m.StudentId == s.StudentId)
+                                    .Select(m => m.LabMarks).FirstOrDefault(),
+
+                    InternalMarks = _context.Marks.Where(m => m.TasksId == task.TasksId && m.StudentId == s.StudentId)
+                                    .Select(m => m.InternalMarks).FirstOrDefault(),
+
+                }).ToList();
+
+            UpdateStudentViewModel.markcount = _context.Marks.Where(m => m.TasksId == task.TasksId).Count();
+            UpdateStudentViewModel.studcount = students.Count();
+
+
+            return View(students);
+        }
         private void UpdateOverdueTasks()
         {
             var now = DateTime.Now;
