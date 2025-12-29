@@ -891,8 +891,60 @@ namespace Student_Performance_Management_System.Controllers
             return View(tasks);
         }
 
+        private void UpdateOverdueTasks()
+        {
+            var now = DateTime.Now;
 
-        [HttpGet]
+            var tasks = _context.Tasks.ToList();
+
+            foreach (var t in tasks)
+            {
+                // Only normal pending tasks become overdue
+                if (t.Status == Status.Pending && now > t.ValidTo)
+                {
+                    t.Status = Status.Overdue;
+                }
+            }
+
+            _context.SaveChanges();
+        }
+
+
+        public IActionResult LateRequests()
+        {
+            UpdateOverdueTasks();
+
+            var list = _db.Tasks
+                .Include(t => t.Staff)
+                .Include(t => t.Subject)
+                .Include(t => t.Course)
+                .Where(t => t.Status == Status.LateRequested)
+                .ToList();
+
+            return View(list);
+        }
+
+        public IActionResult ApproveLate(int id)
+        {
+            var task = _db.Tasks.Find(id);
+
+            task.ValidTo = task.ValidTo.AddDays(3);
+            task.Status = Status.Pending;
+
+
+            _db.SaveChanges();
+            return RedirectToAction("LateRequests");
+        }
+
+
+        public IActionResult RejectLate(int id)
+        {
+            var task = _db.Tasks.Find(id);
+            task.Status = Status.LateRejected;
+            _db.SaveChanges();
+            return RedirectToAction("LateRequests");
+        }
+
         [HttpGet]
         public IActionResult AddTask()
         {
