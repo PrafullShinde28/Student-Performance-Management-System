@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,14 +14,15 @@ namespace Student_Performance_Management_System.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly ApplicationDbContext _db;
-
+        private readonly IEmailSender _emailSender;
 
         public AdminController(UserManager<AppUser> userManager,
-                               ApplicationDbContext context, ApplicationDbContext db)
+                               ApplicationDbContext context, ApplicationDbContext db, IEmailSender emailSender)
         {
             _userManager = userManager;
             _context = context;
             _db = db;
+            _emailSender = emailSender;
         }
         public IActionResult Index()
         {
@@ -273,6 +275,17 @@ namespace Student_Performance_Management_System.Controllers
                 _context.Students.Add(student);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Student enrolled successfully.";
+
+                var subject = "Student enrolled sucessfully";
+                var body = $@"
+                          Dear, {model.Name} <br/>
+                          You have been Enrolled successfully. <br/>
+                          UserName: <b> {student.PRN} </b><br/>
+                          Password: <b>{defaultPassword}  </b><br/><br/>
+                          Regards, <br/>
+                          Admin Team  
+                        ";
+                await _emailSender.SendEmailAsync(model.Email, subject, body);
                 return RedirectToAction("Students");
             }
 
