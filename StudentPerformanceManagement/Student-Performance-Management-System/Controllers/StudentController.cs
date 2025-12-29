@@ -42,7 +42,7 @@ namespace Student_Performance_Management_System.Controllers
 
             // 2. Optimized Count: Subject count ke liye alag query
             int subjectCount = _context.Subjects.Where(s => s.CourseId == student.CourseId).Count();
-            int rank =  GetStudentRank(student.StudentId,student.CourseId);
+            int rank = GetStudentRank(student.StudentId, student.CourseId);
 
             // 3. Mapping to ViewModel
             var stud = new StudentViewModel()
@@ -56,7 +56,7 @@ namespace Student_Performance_Management_System.Controllers
                 CourseGroupName = student.CourseGroup?.GroupName ?? "N/A",
                 MobileNo = student.MobileNo,
                 Rank = rank,
-                
+
             };
 
             return stud;
@@ -71,17 +71,17 @@ namespace Student_Performance_Management_System.Controllers
 
         }
 
-   [HttpGet]
-        public async Task<IActionResult> EditProfile() 
+        [HttpGet]
+        public async Task<IActionResult> EditProfile()
         {
-            var stud = await GetData(); 
+            var stud = await GetData();
             return View(stud);
         }
 
         [HttpPost]
         public async Task<IActionResult> AfterEditProfile(StudentViewModel model)
         {
-        
+
 
             var userId = _userManager.GetUserId(User);
             var appUser = await _userManager.FindByIdAsync(userId);
@@ -102,14 +102,14 @@ namespace Student_Performance_Management_System.Controllers
         }
 
 
-     
+
         public IActionResult ChangePassword()
         {
-            
+
             return View(new PasswordViewModel());
         }
 
-    
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdatePassword(PasswordViewModel model)
@@ -118,7 +118,7 @@ namespace Student_Performance_Management_System.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
 
-           
+
             var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
 
             if (result.Succeeded)
@@ -127,17 +127,17 @@ namespace Student_Performance_Management_System.Controllers
                 TempData["Success"] = "Password updated successfully!";
                 return RedirectToAction("Dashboard", "Student");
             }
-        
+
             foreach (var error in result.Errors)
             {
-              
+
                 if (error.Code.Contains("PasswordMismatch"))
                 {
                     ModelState.AddModelError("CurrentPassword", "The current password you entered is incorrect.");
                 }
                 else
                 {
-                 
+
                     ModelState.AddModelError("NewPassword", error.Description);
                 }
             }
