@@ -12,6 +12,8 @@ namespace Student_Performance_Management_System.Models
 
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Enter valid email")]
+
+        public string ProfileImage { get; set; } = string.Empty;
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Mobile number is required")]
