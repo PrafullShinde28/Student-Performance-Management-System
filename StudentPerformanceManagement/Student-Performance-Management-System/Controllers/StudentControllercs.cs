@@ -164,5 +164,42 @@ namespace Student_Performance_Management_System.Controllers
 
             return View("ChangePassword", model);
         }
+
+        public IActionResult ViewPerformanceCard(int id)
+        {
+            var student = _context.Students
+                .Include(s => s.Course)
+                .Include(s => s.CourseGroup)
+                .Include(s => s.Marks)
+                .ThenInclude(m => m.Subject)
+                .FirstOrDefault(s => s.StudentId == id);
+            /*var subjects = _db.Students
+                .Include(s => s.Marks)
+                    .ThenInclude(m => m.Subject).ToList();*/
+            int rank = GetStudentRank(id, student.CourseId);
+            if (student == null)
+                return NotFound();
+
+            var vm = new PerformanceCard
+            {
+                Rank = rank,
+                StudentPRN = student.PRN,
+                StudentName = student.Name,
+                CourseName = student.Course.CourseName,
+                Subjects = student.Marks.Select(m => new SubjectMarksViewModel
+                {
+                    SubjectName = m.Subject.SubjectName,
+                    Theory = m.TheoryMarks,
+                    Lab = m.LabMarks,
+                    Internal = m.InternalMarks,
+                    Total = m.TotalMarks,
+                    Status = m.IsPass(),
+                    MaxMarks = m.Subject.MaxLabMarks + m.Subject.MaxLabMarks + m.Subject.MaxLabMarks,
+                    FailedIn = m.FailedIn(),
+                }).ToList()
+            };
+
+            return View(vm);
+        }
     }
 }
