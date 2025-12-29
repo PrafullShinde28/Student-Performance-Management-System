@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Student_Performance_Management_System.Models;
 using Student_Performance_Management_System.ViewModel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Student_Performance_Management_System.Controllers
 {
@@ -321,7 +322,7 @@ namespace Student_Performance_Management_System.Controllers
         // ADD STAFF (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddStaff(string name, string email, string mobileNo)
+        public async Task<IActionResult> AddStaff(string name, string email, string mobileNo, IFormFile ProfileImage)
         {
             var tempPassword = "Temp@123";
 
@@ -334,7 +335,7 @@ namespace Student_Performance_Management_System.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, tempPassword);
-            
+            string profileImagePath = await SaveProfileImageAsync(ProfileImage);
 
             if (!result.Succeeded)
             {
@@ -349,8 +350,9 @@ namespace Student_Performance_Management_System.Controllers
                 Name = name,
                 Email = email,
                 MobileNo = mobileNo,
-                AppUserId = user.Id
-               
+                AppUserId = user.Id,
+                ProfileImage = profileImagePath
+
             };
 
             _context.Staffs.Add(staff);
