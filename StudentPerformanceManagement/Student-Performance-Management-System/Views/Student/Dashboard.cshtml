@@ -1,0 +1,224 @@
+﻿@model Student_Performance_Management_System.ViewModel.EditStudentViewModel;
+@* @model StudentViewModel *@
+
+@{
+    ViewData["Title"] = "Student Dashboard";
+    Layout = "_StaffLayout";
+}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<div class="student-dashboard">
+
+    <!-- DASHBOARD HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="mb-0">Student Dashboard</h3>
+            <p>Welcome, @User.Identity.Name</p>
+        </div>
+    </div>
+
+    <!-- PROFILE CARD -->
+    <div class="card shadow-sm mb-4 task-card">
+        <div class="card-body">
+            <div class="row align-items-center">
+
+                <div class="col-md-3 text-center">
+                    <img src="@Model.Profile"
+                         class="rounded-circle border mb-3 profile-img"
+                         alt="Profile Photo">
+                </div>
+
+                <div class="col-md-9">
+                    <h5 class="mb-2">@Model.Name</h5>
+                    <p class="mb-1"><strong>PRN:</strong>@Model.PRN</p>
+                    <p class="mb-1"><strong>Email:</strong> @Model.Email</p>
+                    <p class="mb-1"><strong>Mobile:</strong>@Model.MobileNo</p>
+                    <p class="mb-3"><strong>Course:</strong> @Model.CourseName</p>
+
+                    <a href="/Student/EditProfile/@Model.StudentId" class="btn btn-primary btn-sm">
+                        Edit Profile
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="row g-4 mb-4">
+
+        <!-- Course Name -->
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm p-3 bg-white rounded-3">
+                <div class="d-flex align-items-center">
+                    <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle me-3">
+                        <i class="bi bi-people fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Course Name</small>
+                        <h5 class="fw-bold mb-0">@Model.CourseName</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Subjects -->
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm p-3 bg-white rounded-3">
+                <div class="d-flex align-items-center">
+                    <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-circle me-3">
+                        <i class="bi bi-journal-text fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Total Subjects</small>
+                        <h5 class="fw-bold mb-0">@Model.SubjectCount</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Group Name -->
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm p-3 bg-white rounded-3">
+                <div class="d-flex align-items-center">
+                    <div class="p-3 bg-success bg-opacity-10 text-success rounded-circle me-3">
+                        <i class="bi bi-people fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Course Group</small>
+                        <h5 class="fw-bold mb-0">@Model.CourseGroupName</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
+
+        <!-- Performance -->
+        <div class="col-12 col-md-4">
+            <div class="card border-0 shadow-sm p-3 bg-white rounded-3">
+                <div class="d-flex align-items-center">
+                    <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-circle me-3">
+                        <i class="bi bi-graph-up fs-4"></i>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Course-wise Rank</small>
+                        <h5 class="fw-bold mb-0">@Model.Rank</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- PERFORMANCE CARD -->
+    <a href="/Student/Performance" class="text-decoration-none">
+        <div class="card shadow-sm student-hover-card text-center task-card">
+            <div class="card-body" >
+
+                <h5>Performance</h5>
+                <p class="text-muted mb-3">View detailed academic performance</p>
+                <a href="/Student/ViewPerformanceCard/@Model.StudentId">
+                    <span class="btn btn-outline-primary btn-sm ">
+                            View Performance
+                    </span>
+                </a>
+            </div>
+        </div>
+    </a>
+
+</div>
+
+<style>
+    body {
+        background-color: #f7f7f7;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .student-dashboard {
+        margin-left: 10px;
+        padding: 20px;
+    }
+
+    :root {
+        --primary-blue: #0062ff;
+        --light-blue: #eef4ff;
+        --text-muted: #6c757d;
+        --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #f0f0f0;
+        border-radius: 16px;
+        padding: 1.5rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: flex;
+        align-items: center;
+        box-shadow: var(--card-shadow);
+        height: 100%;
+    }
+
+    .profile-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    .card {
+        transition: transform 0.2s;
+        border: 1px solid #f0f0f0 !important;
+    }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+    .bg-opacity-10 {
+        background-color: rgba(var(--bs-primary-rgb), 0.1);
+    }
+
+    .stat-icon {
+        width: 45px;
+        height: 45px;
+        border: 1px solid #000;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 1.25rem;
+        flex-shrink: 0;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        margin-bottom: 2px;
+    }
+
+    .stat-value {
+        color: #1a1a1a;
+        font-size: 1.25rem;
+        margin-bottom: 0;
+    }
+
+
+    /* TASK CARD (Profile & Performance) */
+    .task-card {
+        border: 1px solid #000;
+        border-radius: 12px;
+        padding: 15px;
+        background: #fff;
+    }
+
+    /* HOVER EFFECT */
+    .student-hover-card:hover {
+        transform: translateY(-4px);
+        transition: 0.3s ease;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+</style>
