@@ -10,12 +10,27 @@
     <a href="/Admin/Subjects"><i class="bi bi-journal-text"></i> Subjects</a>
     <a href="/Admin/Staff"><i class="bi bi-person-badge"></i> Staff</a>
     <a href="/Admin/Tasks"><i class="bi bi-list-task"></i> Tasks</a>
+    <a href="/Admin/LateRequests"><i class="bi bi-list-task"></i> Late Requests</a>
     <a href="/Admin/SubjectWiseReport"><i class="bi bi-bar-chart"></i> SubjectWises Report</a>
     <a href="/Admin/CourseWiseReport"><i class="bi bi-bar-chart"></i> CourseWise Report</a>
-    <a href="#" class="nav-link text-danger" data-bs-toggle="modal" data-bs-target="#logoutModal">
-        <i class="bi bi-box-arrow-right"></i> Logout
-    </a>
-
-
+    <form asp-controller="Account" asp-action="Logout" method="post"class="mt-auto">
+        @Html.AntiForgeryToken()
+        <button type="submit"
+                style="
+                background:none;
+                border:none;
+                width:100%;
+                text-align:left;
+                padding:12px 20px;
+                color:#dc2626;
+                display:flex;
+                align-items:center;
+                gap:10px;
+                cursor:pointer;
+                "
+              onclick="return confirm('Are you sure you want to logout?');">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+    </form>
 
 </div>
