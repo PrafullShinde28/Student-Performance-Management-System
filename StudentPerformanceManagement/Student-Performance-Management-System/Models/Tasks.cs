@@ -4,7 +4,10 @@
     {
         Pending = 0,
         Completed = 1,
-        Overdue = 2
+        Overdue = 2,
+        LateRequested = 3,
+        LateApproved = 4,
+        LateRejected = 5
     }
     public class Tasks
     {

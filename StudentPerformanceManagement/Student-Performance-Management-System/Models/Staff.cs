@@ -9,9 +9,11 @@ namespace Student_Performance_Management_System.Models
 
         [Required(ErrorMessage = "Name is required")]
         public string Name { get; set; }
-
+        public string ProfileImage { get; set; }
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Enter valid email")]
+
+        
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Mobile number is required")]

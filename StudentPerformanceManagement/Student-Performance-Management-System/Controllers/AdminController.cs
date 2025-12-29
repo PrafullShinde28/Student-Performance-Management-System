@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Student_Performance_Management_System.Models;
 using Student_Performance_Management_System.ViewModel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Student_Performance_Management_System.Controllers
 {
@@ -27,6 +28,29 @@ namespace Student_Performance_Management_System.Controllers
         }
 
         #region Student
+
+        private async Task<string> SaveProfileImageAsync(IFormFile? profileImage)
+        {
+            if (profileImage == null || profileImage.Length == 0)
+                return string.Empty;
+
+            // Generate unique file name
+            var fileName = $"{Guid.NewGuid()}_{profileImage.FileName}";
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+
+            // Ensure uploads folder exists
+            Directory.CreateDirectory(Path.GetDirectoryName(uploadPath)!);
+
+            // Save file
+            using (var stream = new FileStream(uploadPath, FileMode.Create))
+            {
+                await profileImage.CopyToAsync(stream);
+            }
+
+            // Return relative path to store in DB
+            return $"/uploads/{fileName}";
+
+        }
 
         public IActionResult Students()
         {
@@ -227,6 +251,9 @@ namespace Student_Performance_Management_System.Controllers
 
             var result = await _userManager.CreateAsync(user, defaultPassword);
 
+            string profileImagePath = await SaveProfileImageAsync(model.ProfileImage);
+
+
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "Student");
@@ -240,7 +267,7 @@ namespace Student_Performance_Management_System.Controllers
                     MobileNo = model.MobileNo,
                     CourseId = model.CourseId,
                     CourseGroupId = model.CourseGroupId,
-                    ProfileImagePath = model.ProfileImagePath
+                    ProfileImagePath = profileImagePath
                 };
 
                 _context.Students.Add(student);
@@ -295,7 +322,7 @@ namespace Student_Performance_Management_System.Controllers
         // ADD STAFF (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddStaff(string name, string email, string mobileNo)
+        public async Task<IActionResult> AddStaff(string name, string email, string mobileNo, IFormFile ProfileImage)
         {
             var tempPassword = "Temp@123";
 
@@ -308,6 +335,7 @@ namespace Student_Performance_Management_System.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, tempPassword);
+            string profileImagePath = await SaveProfileImageAsync(ProfileImage);
 
             if (!result.Succeeded)
             {
@@ -322,7 +350,9 @@ namespace Student_Performance_Management_System.Controllers
                 Name = name,
                 Email = email,
                 MobileNo = mobileNo,
-                AppUserId = user.Id
+                AppUserId = user.Id,
+                ProfileImage = profileImagePath
+
             };
 
             _context.Staffs.Add(staff);
