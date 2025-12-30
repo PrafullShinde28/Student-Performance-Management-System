@@ -1,0 +1,116 @@
+﻿@model IEnumerable<Student_Performance_Management_System.Models.Staff>
+
+@if (TempData["Error"] != null)
+{
+    <script>
+        alert('@TempData["Error"]');
+    </script>
+}
+
+@if (TempData["Success"] != null)
+{
+    <script>
+        alert('@TempData["Success"]');
+    </script>
+}
+
+
+@{
+    ViewData["Title"] = "Staff";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-semibold">Staff</h4>
+
+        <a asp-action="AddStaff" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Staff
+        </a>
+    </div>
+
+    <!-- Staff Table -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th class="text-center">Task Assigned</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @{
+                        int sr = 1;
+                    }
+
+                    @foreach (var staff in Model)
+                    {
+                        <tr>
+                            <td>@sr</td>
+                            <td>@staff.Name</td>
+                            <td>@staff.Email</td>
+                            <td>@staff.MobileNo</td>
+
+                            <!-- VIEW TASK -->
+                            <td class="text-center">
+                                <a asp-action="ViewStaffTasks"
+                                   asp-route-id="@staff.StaffId"
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-eye"></i> View
+                                </a>
+                            </td>
+
+                            <!-- ACTIONS -->
+                            <td class="text-center">
+
+                                <!-- EDIT -->
+                                <a asp-action="EditStaff"
+                                   asp-route-id="@staff.StaffId"
+                                   class="btn btn-sm btn-outline-warning me-1">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                <!-- DELETE -->
+                                <form asp-action="DeleteStaff"
+                                      asp-route-id="@staff.StaffId"
+                                      method="post"
+                                      class="d-inline">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('Are you sure you want to delete this staff?');">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+
+                            </td>
+                        </tr>
+
+                        sr++;
+                    }
+
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                No staff records found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>
