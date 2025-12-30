@@ -1,71 +1,58 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Login";
 }
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f5f5f5; /* slight grey so white card stands out */
-        margin: 0;
-        padding: 0;
-    }
+<!-- Custom CSS Link (Optional if not in site.css) -->
+<link rel="stylesheet" href="cdn.jsdelivr.net">
 
-    .login-container {
-        width: 350px;
-        margin: 80px auto;
-        padding: 30px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.08);
-    }
+<div class="login-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-8 col-md-6 col-lg-4">
+                <div class="login-card shadow-lg animate-fade-in">
+                    <div class="text-center mb-4">
+                        <div class="login-icon-wrapper">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <h3 class="fw-bold mt-3">SPMS Login</h3>
+                        <p class="text-muted small">Enter your credentials to access portal</p>
+                    </div>
 
-    h1 {
-        text-align: center;
-        margin-bottom: 25px;
-        font-weight: 600;
-    }
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope"></i></span>
+                                <input type="email" name="email" class="form-control border-start-0 ps-0" placeholder="name@email.com" required />
+                            </div>
+                        </div>
 
-    label {
-        font-size: 14px;
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 500;
-    }
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-key"></i></span>
+                                <input type="password" name="password" class="form-control border-start-0 ps-0" placeholder="••••••••" required />
+                            </div>
+                        </div>
 
-    input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        margin-bottom: 18px;
-        font-size: 14px;
-    }
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                            Login <i class="bi bi-box-arrow-in-right ms-2"></i>
+                        </button>
+                    </form>
 
-    button {
-        width: 100%;
-        padding: 10px;
-        background: #007bff;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 15px;
-        cursor: pointer;
-    }
-
-        button:hover {
-            background: #0056b3;
-        }
-</style>
-
-<div class="login-container">
-    <h1>Login</h1>
-    <form method="post">
-        <label>Email</label>
-        <input type="email" name="email" required />
-
-        <label>Password</label>
-        <input type="password" name="password" required />
-
-        <button type="submit">Login</button>
-    </form>
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger mt-4 py-2 small d-flex align-items-center">
+                            <i class="bi bi-exclamation-circle-fill me-2"></i>
+                            <span>@ViewBag.Error</span>
+                        </div>
+                    }
+                </div>
+                <div class="text-center mt-4 text-muted small">
+                    &copy; 2025 Student Performance Management System
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

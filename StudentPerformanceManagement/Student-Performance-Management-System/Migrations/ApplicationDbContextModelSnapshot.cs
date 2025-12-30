@@ -311,6 +311,9 @@ namespace Student_Performance_Management_System.Migrations
 
                     b.HasIndex("TasksId");
 
+                    b.HasIndex("SubjectId", "StudentId")
+                        .IsUnique();
+
                     b.ToTable("Marks");
                 });
 
@@ -328,19 +331,18 @@ namespace Student_Performance_Management_System.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MobileNo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("StaffId");
 
@@ -371,7 +373,8 @@ namespace Student_Performance_Management_System.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("MobileNo")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -448,11 +451,22 @@ namespace Student_Performance_Management_System.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("StaffId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("ValidFrom")
                         .HasColumnType("datetime2");
@@ -544,8 +558,8 @@ namespace Student_Performance_Management_System.Migrations
                         .IsRequired();
 
                     b.HasOne("Student_Performance_Management_System.Models.Subject", "Subject")
-                        .WithOne("Marks")
-                        .HasForeignKey("Student_Performance_Management_System.Models.Marks", "SubjectId")
+                        .WithMany("Marks")
+                        .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -626,7 +640,7 @@ namespace Student_Performance_Management_System.Migrations
                         .IsRequired();
 
                     b.HasOne("Student_Performance_Management_System.Models.Staff", "Staff")
-                        .WithMany()
+                        .WithMany("Tasks")
                         .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -660,6 +674,11 @@ namespace Student_Performance_Management_System.Migrations
                     b.Navigation("Students");
                 });
 
+            modelBuilder.Entity("Student_Performance_Management_System.Models.Staff", b =>
+                {
+                    b.Navigation("Tasks");
+                });
+
             modelBuilder.Entity("Student_Performance_Management_System.Models.Student", b =>
                 {
                     b.Navigation("Marks");
@@ -667,8 +686,7 @@ namespace Student_Performance_Management_System.Migrations
 
             modelBuilder.Entity("Student_Performance_Management_System.Models.Subject", b =>
                 {
-                    b.Navigation("Marks")
-                        .IsRequired();
+                    b.Navigation("Marks");
                 });
 #pragma warning restore 612, 618
         }

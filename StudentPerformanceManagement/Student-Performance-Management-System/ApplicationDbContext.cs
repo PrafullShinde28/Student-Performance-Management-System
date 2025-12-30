@@ -60,13 +60,16 @@ namespace Student_Performance_Management_System
 
             builder.Entity<Tasks>()
                .HasOne(t => t.Staff)
-               .WithMany()
+               .WithMany(m=>m.Tasks)
                .HasForeignKey(t => t.StaffId)
                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Marks>()
                 .HasIndex(t => t.SubjectId)
                 .IsUnique(false);
+            builder.Entity<Marks>()
+                .HasIndex(m => new { m.SubjectId, m.StudentId })
+                .IsUnique();
 
         }
 

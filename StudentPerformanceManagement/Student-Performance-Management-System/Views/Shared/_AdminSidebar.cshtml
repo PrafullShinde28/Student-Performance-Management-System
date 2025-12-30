@@ -5,11 +5,14 @@
     <hr class="text-secondary">
     <a href="/Account/Dashboard" class="active"><i class="bi bi-grid-fill"></i> Dashboard</a>
     <a href="/Admin/Courses"><i class="bi bi-book"></i> Courses</a>
+    <a href="/Admin/CourseGroups"><i class="bi bi-book"></i>CourseGroups</a>
     <a href="/Admin/Students"><i class="bi bi-people"></i> Students</a>
-    <a href="#"><i class="bi bi-journal-text"></i> Subjects</a>
-    <a href="#"><i class="bi bi-person-badge"></i> Staff</a>
+    <a href="/Admin/Subjects"><i class="bi bi-journal-text"></i> Subjects</a>
+    <a href="/Admin/Staff"><i class="bi bi-person-badge"></i> Staff</a>
     <a href="/Admin/Tasks"><i class="bi bi-list-task"></i> Tasks</a>
-    <a href="#"><i class="bi bi-bar-chart"></i> Reports</a>
+    <a href="/Admin/LateRequests"><i class="bi bi-list-task"></i> Late Requests</a>
+    <a href="/Admin/SubjectWiseReport"><i class="bi bi-bar-chart"></i> SubjectWises Report</a>
+    <a href="/Admin/CourseWiseReport"><i class="bi bi-bar-chart"></i> CourseWise Report</a>
     <form asp-controller="Account" asp-action="Logout" method="post"class="mt-auto">
         @Html.AntiForgeryToken()
         <button type="submit"

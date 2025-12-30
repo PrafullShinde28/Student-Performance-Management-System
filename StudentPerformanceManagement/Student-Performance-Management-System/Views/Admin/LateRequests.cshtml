@@ -1,0 +1,72 @@
+﻿@model List<Student_Performance_Management_System.Models.Tasks>
+@{
+    ViewData["Title"] = "Late Requests";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 px-3 py-3 bg-white rounded shadow-sm border">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-envelope-exclamation fs-4 text-danger"></i>
+            <h4 class="fw-semibold mb-0">Late Submission Requests</h4>
+        </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Staff</th>
+                        <th>Task Title</th>
+                        <th>Subject</th>
+                        <th>Reason</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No pending late requests 🎉
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <span class="fw-semibold">@item.Staff.Name</span>
+                                </td>
+                                <td>@item.Title</td>
+                                <td>@item.Subject.SubjectName</td>
+                                <td>
+                                    <span class="text-muted small">@item.Description</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group gap-2">
+                                        <a asp-action="ApproveLate" asp-route-id="@item.TasksId"
+                                           class="btn btn-sm btn-success rounded-pill px-3">
+                                            <i class="bi bi-check-circle"></i> Approve
+                                        </a>
+                                        <a asp-action="RejectLate" asp-route-id="@item.TasksId"
+                                           class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                            <i class="bi bi-x-circle"></i> Reject
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

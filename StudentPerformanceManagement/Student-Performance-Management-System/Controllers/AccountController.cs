@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Student_Performance_Management_System.Models;
+using Student_Performance_Management_System.ViewModel;
 
 namespace Student_Performance_Management_System.Controllers
 {
@@ -8,12 +10,13 @@ namespace Student_Performance_Management_System.Controllers
     {
         private readonly SignInManager<AppUser> _signInManager;
         private readonly UserManager<AppUser> _userManager;
-
+        private readonly ApplicationDbContext _db;
         public AccountController(SignInManager<AppUser> signInManager,
-                                 UserManager<AppUser> userManager)
+                                 UserManager<AppUser> userManager, ApplicationDbContext db)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _db = db;
         }
 
         // LOGIN PAGE
@@ -45,12 +48,27 @@ namespace Student_Performance_Management_System.Controllers
             var user = await _userManager.GetUserAsync(User);
 
             if (await _userManager.IsInRoleAsync(user, "Admin"))
-                return View("AdminDashboard");
+            {
+
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                {
+                    var stats = new DashboardViewModel
+                    {
+                        TotalCourses = _db.Courses.Count(),
+                        TotalGroups = _db.CourseGroups.Count(),
+                        TotalTasks = _db.Tasks.Count(),
+                        TotalStudent = _db.Students.Count(),
+                        TotalStaff = _db.Staffs.Count(),
+                        TotalSubjects = _db.Subjects.Count()
+                    };
+                    return View("AdminDashboard", stats);
+                }
+            }
 
             if (await _userManager.IsInRoleAsync(user, "Staff"))
-                return View("StaffDashboard");
+                return RedirectToAction("Dashboard", "Staff");
 
-            return View("StudentDashboard");
+            return RedirectToAction("Dashboard", "Student");
         }
 
         // LOGOUT (POST ONLY)
