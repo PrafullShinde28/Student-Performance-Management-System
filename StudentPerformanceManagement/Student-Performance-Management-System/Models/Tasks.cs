@@ -1,0 +1,41 @@
+﻿namespace Student_Performance_Management_System.Models
+{
+    public enum Status
+    {
+        Pending = 0,
+        Completed = 1,
+        Overdue = 2,
+        LateRequested = 3,
+        LateApproved = 4,
+        LateRejected = 5
+    }
+
+    public class Tasks
+    {
+        public int TasksId { get; set; }
+        //Fk
+        public int StaffId { get; set; }
+        public Staff Staff { get; set; }
+
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public Status Status { get; set; } = Status.Pending;
+        public int CourseId { get; set; }
+        public Course Course { get; set; }
+
+        public int SubjectId { get; set; }
+        public Subject Subject { get; set; }
+
+        public int CourseGroupId { get; set; }
+        public CourseGroup CourseGroup { get; set; }
+
+        public DateTime ValidFrom { get; set; }
+        public DateTime ValidTo { get; set; }
+
+        public bool IsActive(DateTime now)
+        {
+            return now >= ValidFrom && now <= ValidTo;
+        }
+
+    }
+}

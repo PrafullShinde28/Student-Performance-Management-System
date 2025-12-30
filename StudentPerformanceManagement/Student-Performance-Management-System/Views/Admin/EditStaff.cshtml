@@ -1,0 +1,67 @@
+﻿@model Student_Performance_Management_System.Models.Staff
+
+@{
+    ViewData["Title"] = "Edit Staff";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-semibold text-primary">
+            <i class="bi bi-pencil-square"></i> Edit Staff
+        </h4>
+
+        <a asp-action="Staff" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+
+            <div class="card shadow border-0 rounded-4">
+                <div class="card-body p-4">
+
+                    <form asp-action="EditStaff" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" asp-for="StaffId" />
+                        <input type="hidden" asp-for="AppUserId" />
+
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Name</label>
+                            <input asp-for="Name" class="form-control" required />
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email</label>
+                            <input asp-for="Email" class="form-control" readonly />
+                        </div>
+
+                        <!-- Mobile -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Mobile Number</label>
+                            <input asp-for="MobileNo" class="form-control" required />
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-save"></i> Update
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
