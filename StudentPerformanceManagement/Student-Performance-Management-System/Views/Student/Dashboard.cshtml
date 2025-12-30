@@ -1,5 +1,5 @@
-﻿@using StudentPerformanceManagment.ViewModel
-@model StudentViewModel
+﻿@model Student_Performance_Management_System.ViewModel.EditStudentViewModel;
+@* @model StudentViewModel *@
 
 @{
     ViewData["Title"] = "Student Dashboard";
@@ -23,8 +23,8 @@
             <div class="row align-items-center">
 
                 <div class="col-md-3 text-center">
-                    <img src="https://via.placeholder.com/120"
-                         class="rounded-circle border mb-3"
+                    <img src="@Model.Profile"
+                         class="rounded-circle border mb-3 profile-img"
                          alt="Profile Photo">
                 </div>
 
@@ -157,6 +157,12 @@
         align-items: center;
         box-shadow: var(--card-shadow);
         height: 100%;
+    }
+
+    .profile-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
     }
 
     .card {

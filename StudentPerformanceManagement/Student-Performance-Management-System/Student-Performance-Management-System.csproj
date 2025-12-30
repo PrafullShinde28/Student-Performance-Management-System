@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\.NetInternship(Karad)\Notes\IIT-08-C-DotNet\Project\EmailService\EmailService.csproj" />
+    <ProjectReference Include="..\..\..\..\IIT-08-C-DotNet\Project\EmailService\EmailService.csproj" />
   </ItemGroup>
 
 </Project>
