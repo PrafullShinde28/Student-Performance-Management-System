@@ -23,6 +23,6 @@ namespace Student_Performance_Management_System.Models
 
         public int PassingPercentEachComponent { get; set; } = 40;
 
-        public Marks Marks { get; set; }
+        public ICollection<Marks> Marks { get; set; } = new List<Marks> { };
     }
 }

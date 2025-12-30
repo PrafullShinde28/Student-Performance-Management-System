@@ -1,0 +1,176 @@
+﻿@model List<Student_Performance_Management_System.Models.Student>
+
+@{
+    ViewData["Title"] = "Students";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+
+    <!-- SUCCESS / ERROR MESSAGE (CENTER) -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="position-fixed top-50 start-50 translate-middle z-3">
+            <div class="alert alert-success shadow-lg text-center px-4 py-3 rounded-3">
+                @TempData["Success"]
+            </div>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="position-fixed top-50 start-50 translate-middle z-3">
+            <div class="alert alert-danger shadow-lg text-center px-4 py-3 rounded-3">
+                @TempData["Error"]
+            </div>
+        </div>
+    }
+
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-semibold">Students</h4>
+
+        <a asp-action="EnrollStudent"
+           asp-controller="Admin"
+           class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Student
+        </a>
+    </div>
+
+    <!-- STUDENTS TABLE -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>PRN</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Course</th>
+                        <th>Group</th>
+                        <th>Mobile</th>
+                        <th>Performance Card</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        int sr = 1;
+                        foreach (var student in Model)
+                        {
+                            <tr>
+                                <td>@sr</td>
+                                <td>@student.PRN</td>
+                                <td>@student.Name</td>
+                                <td>@student.Email</td>
+                                <td>@(student.Course?.CourseName ?? "N/A")</td>
+                                <td>@(student.CourseGroup?.GroupName ?? "N/A")</td>
+                                <td>@student.MobileNo</td>
+                                <td>
+                                    <a asp-action="ViewPerformanceCard"
+                                       asp-controller="Admin"
+                                       asp-route-id="@student.StudentId"
+                                       class="btn btn-sm btn-outline-warning me-1">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+
+                                <td class="text-center">
+
+                                    <!-- EDIT -->
+                                    <a asp-action="EditStudent"
+                                       asp-controller="Admin"
+                                       asp-route-id="@student.StudentId"
+                                       class="btn btn-sm btn-outline-warning me-1">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+
+                                    <!-- DELETE (OPEN CONFIRM MODAL) -->
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger"
+                                            onclick="openDeleteModal(@student.StudentId)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+
+                                </td>
+                            </tr>
+                            sr++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-4">
+                                No students found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL (ONLY ONCE) -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i> Confirm Delete
+                </h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <p class="fs-5 fw-semibold">Are you sure?</p>
+                <p class="text-muted mb-0">
+                    This student will be permanently deleted.
+                </p>
+            </div>
+
+            <div class="modal-footer justify-content-center">
+                <form id="deleteForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit"
+                            id="confirmDeleteBtn"
+                            class="btn btn-danger px-4">
+                        Yes, Delete
+                    </button>
+                </form>
+
+                <button type="button"
+                        class="btn btn-outline-secondary px-4"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+    function openDeleteModal(studentId) {
+        const btn = document.getElementById('confirmDeleteBtn');
+        btn.setAttribute('formaction', '/Admin/DeleteStudent/' + studentId);
+        btn.setAttribute('formmethod', 'post');
+
+        const modal = new bootstrap.Modal(
+            document.getElementById('deleteModal')
+        );
+        modal.show();
+    }
+
+    // auto-hide success/error message
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(a => a.remove());
+    }, 3000);
+</script>

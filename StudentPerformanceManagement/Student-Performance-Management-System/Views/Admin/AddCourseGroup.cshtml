@@ -1,0 +1,60 @@
+﻿@model Student_Performance_Management_System.ViewModel.AddCourseGroupVM
+
+@{
+    ViewData["Title"] = "Add Course Group";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-semibold text-primary">Add Course Group</h4>
+        <a asp-action="CourseGroups" class="btn btn-outline-secondary">Back</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+
+            <div class="card shadow">
+                <div class="card-body">
+
+                    <form asp-action="AddCourseGroup" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <!-- GROUP NAME -->
+                        <div class="mb-3">
+                            <label class="form-label">Group Name</label>
+                            <input asp-for="CourseGroupName" class="form-control" />
+                            <span asp-validation-for="CourseGroupName" class="text-danger small"></span>
+                        </div>
+
+                        <!-- COURSE -->
+                        <div class="mb-3">
+                            <label class="form-label">Course</label>
+                            <select asp-for="CourseId"
+                                    asp-items="Model.Courses"
+                                    class="form-select">
+                                <option value="">-- Select Course --</option>
+                            </select>
+                            <span asp-validation-for="CourseId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">
+                                Save
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
