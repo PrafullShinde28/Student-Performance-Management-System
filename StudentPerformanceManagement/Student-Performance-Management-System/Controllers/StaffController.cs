@@ -25,6 +25,31 @@ namespace Student_Performance_Management_System.Controllers
             _context = context;
         }
 
+        public async Task<IActionResult> MyTasks()
+        {
+            UpdateOverdueTasks();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            var myTasks = await _context.Tasks
+                .Include(t => t.Course)
+                .Include(t => t.Subject)
+                .Include(t => t.CourseGroup)
+                .Where(t => t.Staff.AppUserId == userId)
+                .ToListAsync();
+
+            var vm = new StaffDashViewModel
+            {
+
+                // StaffDashViewModel properties
+                StaffId = userId,
+                StaffName = user?.UserName,
+                TaskCount = myTasks.Count,
+                Tasks = myTasks
+            };
+
+            return View("MyTasks", vm);  // ya sirf return View(vm);
+        }
         public async Task<IActionResult> Dashboard()
         {
 
@@ -119,7 +144,60 @@ namespace Student_Performance_Management_System.Controllers
 
             _context.SaveChanges();
         }
-      
+
+        [HttpPost]
+        public IActionResult SaveMark(UpdateStudentViewModel markviewmodel)
+        {
+            var subject = _context.Subjects.Find(markviewmodel.SubjectId);
+
+            var existingMark = _context.Marks
+                .FirstOrDefault(m => m.StudentId == markviewmodel.StudentId && m.TasksId == markviewmodel.TaskId);
+
+
+
+            if (subject == null)
+            {
+                TempData["Error"] = "Subject not found.";
+                return RedirectToAction("AddMark", new { id = markviewmodel.TaskId });
+            }
+
+            if (markviewmodel.TheoryMarks < 0 || markviewmodel.TheoryMarks > subject.MaxTheoryMarks ||
+                markviewmodel.LabMarks < 0 || markviewmodel.LabMarks > subject.MaxLabMarks ||
+                markviewmodel.InternalMarks < 0 || markviewmodel.InternalMarks > subject.MaxInternalMarks)
+            {
+                TempData["Error"] = $"Invalid Marks! Marks Cannot Above than Theory({subject.MaxTheoryMarks}), Lab({subject.MaxLabMarks}), Internal({subject.MaxInternalMarks})";
+
+                return RedirectToAction("AddMark", new { id = markviewmodel.TaskId });
+            }
+
+
+            if (existingMark != null)
+            {
+                existingMark.TheoryMarks = markviewmodel.TheoryMarks;
+                existingMark.LabMarks = markviewmodel.LabMarks;
+                existingMark.InternalMarks = markviewmodel.InternalMarks;
+            }
+            else
+            {
+                var newMark = new Marks
+                {
+                    TasksId = markviewmodel.TaskId,
+                    StudentId = markviewmodel.StudentId,
+                    SubjectId = markviewmodel.SubjectId,
+                    TheoryMarks = markviewmodel.TheoryMarks,
+                    LabMarks = markviewmodel.LabMarks,
+                    InternalMarks = markviewmodel.InternalMarks
+                };
+
+
+                _context.Marks.Add(newMark);
+            }
+
+
+            _context.SaveChanges();
+            TempData["Success"] = "Marks saved successfully!";
+            return RedirectToAction("AddMark", new { id = markviewmodel.TaskId });
+        }
 
         public IActionResult CompleteTask(int taskId)
         {

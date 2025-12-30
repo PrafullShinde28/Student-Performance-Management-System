@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Student_Performance_Management_System.Models;
 using Student_Performance_Management_System.ViewModel;
-using StudentPerformanceManagment.ViewModel;
+using Student_Performance_Management_System.ViewModel;
 using System.Security.Claims;
 
 
