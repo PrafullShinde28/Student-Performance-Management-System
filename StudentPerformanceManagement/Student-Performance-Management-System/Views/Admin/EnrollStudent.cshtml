@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="card-body">
-                    <form asp-action="EnrollStudent" method="post">
+                    <form asp-action="EnrollStudent" method="post" enctype="multipart/form-data">
 
                         <!-- NAME -->
                         <div class="mb-3">
@@ -60,10 +60,14 @@
                             </select>
                             <span asp-validation-for="CourseGroupId" class="text-danger small"></span>
                         </div>
-
-                        <div class="alert alert-secondary small">
-                            Default Password: <strong>Student@123</strong>
+                        <div class="form-group mb-3">
+                            <label asp-for="ProfileImage" class="form-label"></label>
+                            <input asp-for="ProfileImage" type="file" class="form-control" />
+                            <span asp-validation-for="ProfileImage" class="text-danger"></span>
                         </div>
+                        @* <div class="alert alert-secondary small">
+                            Default Password: <strong>Student@123</strong>
+                        </div> *@
 
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">
@@ -72,6 +76,10 @@
                         </div>
 
                     </form>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p style="color:red">@error.ErrorMessage</p>
+                    }
                 </div>
             </div>
 

@@ -167,11 +167,6 @@ namespace Student_Performance_Management_System.Controllers
         }
 
 
-
-
-
-
-
         public string GeneratePRN()
         {
             int year = DateTime.Now.Year;
@@ -274,6 +269,7 @@ namespace Student_Performance_Management_System.Controllers
 
                 _context.Students.Add(student);
                 await _context.SaveChangesAsync();
+
                 TempData["Success"] = "Student enrolled successfully.";
 
                 var subject = "Student enrolled sucessfully";
@@ -288,7 +284,8 @@ namespace Student_Performance_Management_System.Controllers
                 await _emailSender.SendEmailAsync(model.Email, subject, body);
                 return RedirectToAction("Students");
             }
-
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
             return View(model);
         }
 

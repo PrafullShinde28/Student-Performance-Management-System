@@ -1,4 +1,4 @@
-﻿@using StudentPerformanceManagment.ViewModel
+﻿@using Student_Performance_Management_System.ViewModel
 @model StaffDashViewModel
 
 @{
@@ -13,6 +13,7 @@
         .ThenBy(t => t.ValidTo) // Jinki deadline paas hai wo upar
         .Take(6)
         .ToList();
+    Layout = "_StaffLayout";
 }
 
 <div class="container-fluid py-4 animate-fade-in">

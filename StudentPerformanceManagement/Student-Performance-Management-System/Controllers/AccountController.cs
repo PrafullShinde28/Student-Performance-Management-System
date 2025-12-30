@@ -66,9 +66,9 @@ namespace Student_Performance_Management_System.Controllers
             }
 
             if (await _userManager.IsInRoleAsync(user, "Staff"))
-                return View("StaffDashboard");
+                return RedirectToAction("Dashboard", "Staff");
 
-            return View("StudentDashboard");
+            return RedirectToAction("Dashboard", "Student");
         }
 
         // LOGOUT (POST ONLY)
