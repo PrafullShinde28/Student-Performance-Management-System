@@ -9,7 +9,6 @@
         LateApproved = 4,
         LateRejected = 5
     }
-
     public class Tasks
     {
         public int TasksId { get; set; }
