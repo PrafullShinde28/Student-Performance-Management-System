@@ -55,7 +55,8 @@ namespace Student_Performance_Management_System.Controllers
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
-
+            var staff = await _context.Staffs
+                        .FirstOrDefaultAsync(s => s.AppUserId == userId);
             var myTasks = await _context.Tasks
                 .Include(t => t.Course)
                 .Include(t => t.Subject)
@@ -70,7 +71,8 @@ namespace Student_Performance_Management_System.Controllers
                 StaffId = userId,
                 StaffName = user?.UserName,
                 TaskCount = myTasks.Count,
-                Tasks = myTasks
+                Tasks = myTasks,
+                Profile = staff.ProfileImage
             };
             return View("Dashboard", vm);   // YAHAN StaffDashViewModel hi return karo
         }

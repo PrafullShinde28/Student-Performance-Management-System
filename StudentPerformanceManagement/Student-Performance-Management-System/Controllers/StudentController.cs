@@ -56,7 +56,7 @@ namespace Student_Performance_Management_System.Controllers
                 CourseGroupName = student.CourseGroup?.GroupName ?? "N/A",
                 MobileNo = student.MobileNo,
                 Rank = rank,
-
+                Profile = student.ProfileImagePath
             };
 
             return stud;
