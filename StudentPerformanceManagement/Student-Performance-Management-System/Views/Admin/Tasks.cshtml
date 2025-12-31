@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Student_Performance_Management_System.Models.Tasks>
+﻿@model TaskFilterVM
+
 @{
     ViewData["Title"] = "Tasks";
     Layout = "_AdminLayout";
@@ -35,10 +36,35 @@
             <i class="bi bi-plus-circle"></i> Add Task
         </a>
     </div>
-
+    @* Filter *@
+    @* staffwise, status wise *@
     <!-- Table -->
     <div class="card shadow-sm">
         <div class="card-body p-0">
+            <form method="get" class="row g-2 mb-3">
+                <div class="col-md-4">
+                    <select asp-for="StaffId" asp-items="Model.StaffList" class="form-select">
+                        <option value="">-- Select Staff --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <select asp-for="Status" asp-items="Model.StatusList" class="form-select">
+                        <option value="">-- Select Status --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                </div>
+
+                <div class="col-md-2">
+                    <a asp-action="Tasks" class="btn btn-outline-secondary w-100">Clear</a>
+                </div>
+            </form>
+
             <table class="table table-hover mb-0 align-middle">
                 <thead class="table-light">
                     <tr>
@@ -52,7 +78,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var t in Model)
+                    @foreach (var t in Model.Tasks)
+
                     {
                         <tr>
                             <td>@t.Title</td>
@@ -79,7 +106,8 @@
                         </tr>
                     }
 
-                    @if (!Model.Any())
+                    @if (!Model.Tasks.Any())
+
                     {
                         <tr>
                             <td colspan="7" class="text-center text-muted py-4">
