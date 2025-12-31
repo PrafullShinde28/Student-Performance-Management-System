@@ -30,7 +30,15 @@
                         <img src="@Model.Profile"
                              class="rounded-circle profile-img"
                              alt="Profile Photo">
+                        <div class="col-md-9">
+                            <h5 class="mb-2">@Model.StaffName</h5>
+                            <p class="mb-1"><strong>Email: </strong>@Model.Email</p>
+                            <p class="mb-3"><strong>Mobile: </strong> @Model.MobileNo</p>
 
+                            <a href="/Staff/EditProfile/@Model.StaffId" class="btn btn-primary btn-sm">
+                                Edit Profile
+                            </a>
+                        </div>
                     </div>
 
                     <!-- Date & Session -->

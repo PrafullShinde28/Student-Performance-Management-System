@@ -20,9 +20,32 @@
                     </div>
 
                     <!-- FORM: POST method aur Tag Helpers ka use karein -->
-                    <form asp-controller="Student" asp-action="AfterEditProfile" method="post">
+                    <form asp-controller="Student" asp-action="EditProfile" method="post" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
+                        <input asp-for="StudentId" value="@Model.StudentId" hidden/>
+                        <div class="text-center mb-4">
 
+                            <img src="@(string.IsNullOrEmpty(Model.Profile)
+                                    ? "/images/default-user.png"
+                                    : Model.Profile)"
+                                 class="rounded-circle profile-img mb-3"
+                                 alt="Profile Photo" />
+
+                            <div class="mb-2">
+                                <label class="form-label fw-semibold d-block">
+                                    Update Profile Photo
+                                </label>
+
+                                <input asp-for="Profile"
+                                       type="file"
+                                       class="form-control form-control-sm"
+                                       accept="image/*">
+                            </div>
+
+                            <small class="text-muted">
+                                JPG / PNG only. Max 2MB.
+                            </small>
+                        </div>
                         <!-- Read Only Fields -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold text-muted">PRN (Read Only)</label>
@@ -70,3 +93,11 @@
     @* Client-side validation ke liye ye zaroori hai *@
     <partial name="_ValidationScriptsPartial" />
 }
+<style>
+    .profile-img {
+        width: 130px;
+        height: 130px;
+        object-fit: cover;
+        border: 3px solid #e9ecef;
+    }
+</style>

@@ -1,72 +1,140 @@
 ﻿@using Student_Performance_Management_System.ViewModel
-@model StudentViewModel
+@model EditStaff
+
 @{
     Layout = "_StaffLayout";
 }
+
 <div class="container mt-4 mb-5">
     <div class="row justify-content-center">
         <div class="col-12 col-md-8 col-lg-6">
 
             <div class="card shadow-sm border-0 rounded-3">
+
                 <!-- HEADER -->
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0 fw-bold text-primary"><i class="bi bi-person-gear me-2"></i>Edit Profile</h5>
+                    <h5 class="mb-0 fw-bold text-primary">
+                        <i class="bi bi-person-gear me-2"></i>Edit Profile
+                    </h5>
                 </div>
 
                 <div class="card-body p-4">
+
                     <!-- ALERT -->
                     <div class="alert alert-info border-0 shadow-sm small mb-4">
-                        <i class="bi bi-info-circle me-2"></i>PRN and Email are fixed for security reasons.
+                        <i class="bi bi-info-circle me-2"></i>
+                        Email is fixed for security reasons.
                     </div>
 
-                    <!-- FORM: POST method aur Tag Helpers ka use karein -->
-                    <form asp-controller="Student" asp-action="AfterEditProfile" method="post">
+                    <!-- FORM -->
+                    <form asp-controller="Staff"
+                          asp-action="EditProfile"
+                          method="post"
+                          enctype="multipart/form-data">
+
                         @Html.AntiForgeryToken()
 
-                        <!-- Read Only Fields -->
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold text-muted">PRN (Read Only)</label>
-                            <input asp-for="PRN" class="form-control bg-light" readonly>
+                        
+                        <!-- PROFILE PHOTO SECTION -->
+                        <div class="text-center mb-4">
+
+                            <img src="@(string.IsNullOrEmpty(Model.ProfileImage)
+                                    ? "/images/default-user.png"
+                                    : Model.ProfileImage)"
+                                 class="rounded-circle profile-img mb-3"
+                                 alt="Profile Photo" />
+
+                            <div class="mb-2">
+                                <label class="form-label fw-semibold d-block">
+                                    Update Profile Photo
+                                </label>
+
+                                <input asp-for="ProfileImage"
+                                       type="file"
+                                       class="form-control form-control-sm"
+                                       accept="image/*">
+                            </div>
+
+                            <small class="text-muted">
+                                JPG / PNG only. Max 2MB.
+                            </small>
                         </div>
 
+                        <hr class="my-4" />
+
+                        <!-- FULL NAME -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Full Name *</label>
-                            <input asp-for="Name" class="form-control" placeholder="Enter your full name">
-                            <span asp-validation-for="Name" class="text-danger small"></span>
+                            <input asp-for="StaffName"
+                                   class="form-control"
+                                   placeholder="Enter your full name">
+                            <span asp-validation-for="StaffName"
+                                  class="text-danger small"></span>
                         </div>
 
+                        <!-- EMAIL -->
                         <div class="mb-3">
-                            <label class="form-label fw-semibold text-muted">Email (Read Only)</label>
-                            <input asp-for="Email" class="form-control bg-light" readonly>
+                            <label class="form-label fw-semibold text-muted">
+                                Email (Read Only)
+                            </label>
+                            <input asp-for="Email"
+                                   class="form-control bg-light"
+                                   readonly>
                         </div>
 
+                        <!-- MOBILE -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Mobile Number *</label>
-                            <input asp-for="MobileNo" class="form-control" placeholder="10-digit mobile number">
-                            <span asp-validation-for="MobileNo" class="text-danger small"></span>
+                            <input asp-for="MobileNo"
+                                   class="form-control"
+                                   placeholder="10-digit mobile number">
+                            <span asp-validation-for="MobileNo"
+                                  class="text-danger small"></span>
                         </div>
 
-                        <hr class="my-4">
-                        <a asp-controller="Student" asp-action="ChangePassword" class="btn btn-light px-4 border">
-                            Change Password
-                        </a>
-                        <!-- BUTTONS -->
-                        <div class="d-flex justify-content-end gap-2 mt-5">
-                            <a asp-controller="Student" asp-action="Dashboard" class="btn btn-light px-4 border">
-                                Cancel
+                        <hr class="my-4" />
+
+                        <!-- ACTIONS -->
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <a asp-controller="Staff"
+                               asp-action="ChangePassword"
+                               class="btn btn-light border">
+                                Change Password
                             </a>
-                            <button type="submit" class="btn btn-primary px-4 shadow-sm">
-                                Save Changes
-                            </button>
+
+                            <div class="d-flex gap-2">
+                                <a asp-controller="Staff"
+                                   asp-action="Dashboard"
+                                   class="btn btn-light border">
+                                    Cancel
+                                </a>
+
+                                <button type="submit"
+                                        class="btn btn-primary px-4 shadow-sm">
+                                    Save Changes
+                                </button>
+                            </div>
+
                         </div>
+
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 
 @section Scripts {
-    @* Client-side validation ke liye ye zaroori hai *@
     <partial name="_ValidationScriptsPartial" />
 }
+
+<style>
+    .profile-img {
+        width: 130px;
+        height: 130px;
+        object-fit: cover;
+        border: 3px solid #e9ecef;
+    }
+</style>

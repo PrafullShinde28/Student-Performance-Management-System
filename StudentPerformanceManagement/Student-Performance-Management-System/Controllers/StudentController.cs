@@ -79,6 +79,18 @@ namespace Student_Performance_Management_System.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> EditProfile(EditStudentVM st)
+        {
+            var stud = _context.Students.Where(s => s.StudentId == st.StudentId).FirstOrDefault();
+            stud.Name = st.Name;
+            stud.MobileNo = st.MobileNo;
+            stud.ProfileImagePath = await SaveProfileImageAsync(st.Profile);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Dashboard");
+        }
+
+        /*[HttpPost]
         public async Task<IActionResult> AfterEditProfile(StudentViewModel model)
         {
 
@@ -99,7 +111,7 @@ namespace Student_Performance_Management_System.Controllers
 
             TempData["Success"] = "Profile updated successfully!";
             return RedirectToAction("Dashboard");
-        }
+        }*/
 
 
 
@@ -207,6 +219,29 @@ namespace Student_Performance_Management_System.Controllers
             };
 
             return View(vm);
+        }
+
+        private async Task<string> SaveProfileImageAsync(IFormFile? profileImage)
+        {
+            if (profileImage == null || profileImage.Length == 0)
+                return string.Empty;
+
+            // Generate unique file name
+            var fileName = $"{Guid.NewGuid()}_{profileImage.FileName}";
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+
+            // Ensure uploads folder exists
+            Directory.CreateDirectory(Path.GetDirectoryName(uploadPath)!);
+
+            // Save file
+            using (var stream = new FileStream(uploadPath, FileMode.Create))
+            {
+                await profileImage.CopyToAsync(stream);
+            }
+
+            // Return relative path to store in DB
+            return $"/uploads/{fileName}";
+
         }
     }
 }
