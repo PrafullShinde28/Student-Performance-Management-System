@@ -49,8 +49,8 @@
             /*(current / maximum) * 100*/
 
             double theoryPercent = (TheoryMarks / (Double)mt) * 100;
-            double labPercent = (InternalMarks / (Double)ml) * 100;
-            double internalPercent = (LabMarks / (Double)mi) * 100;
+            double labPercent = (LabMarks / (Double)ml) * 100; 
+            double internalPercent = (InternalMarks / (Double)mi) * 100;
 
             if (theoryPercent < passingPercent && labPercent < passingPercent && internalPercent < passingPercent) return "F";
             else if (theoryPercent < passingPercent && labPercent < passingPercent) return "TL";

@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="../../../.NetInternship(Karad)/Notes/IIT-08-C-DotNet/Project/EmailService/EmailService.csproj" />
+  <Project Path="EmailService/EmailService.csproj" />
   <Project Path="Student-Performance-Management-System/Student-Performance-Management-System.csproj" />
 </Solution>

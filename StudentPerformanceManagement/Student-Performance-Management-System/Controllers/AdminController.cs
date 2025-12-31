@@ -1182,9 +1182,9 @@ public IActionResult DeleteTask(int id)
                 {
                     string failed = "";
 
-                    if (m.TheoryMarks < 40) failed += "T";
-                    if (m.LabMarks < 20) failed += "L";
-                    if (m.InternalMarks < 20) failed += "I";
+                    if (m.TheoryMarks < 15) failed += "T";
+                    if (m.LabMarks < 15) failed += "L";
+                    if (m.InternalMarks < 7) failed += "I";
 
                     bool isPass = failed == "";
 
@@ -1276,9 +1276,9 @@ public IActionResult DeleteTask(int id)
                 foreach (var m in s.Marks)
                 {
                     string failed = "";
-                    if (m.TheoryMarks < 16) failed += "T";
-                    if (m.LabMarks < 16) failed += "L";
-                    if (m.InternalMarks < 8) failed += "I";
+                    if (m.TheoryMarks < 15) failed += "T";
+                    if (m.LabMarks < 15) failed += "L";
+                    if (m.InternalMarks < 7) failed += "I";
 
                     if (failed != "") courseFail = true;
 
@@ -1388,7 +1388,7 @@ public IActionResult DeleteTask(int id)
                     Internal = m.InternalMarks,
                     Total = m.TotalMarks,
                     Status = m.IsPass(),
-                    MaxMarks = m.Subject.MaxLabMarks + m.Subject.MaxLabMarks + m.Subject.MaxLabMarks,
+                    MaxMarks = m.Subject.MaxTheoryMarks + m.Subject.MaxLabMarks + m.Subject.MaxInternalMarks,
                     FailedIn = m.FailedIn(),
                 }).ToList()
             };

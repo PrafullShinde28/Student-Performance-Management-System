@@ -1,4 +1,4 @@
-﻿@model  Student_Performance_Management_System.ViewModel.StaffDashViewModel;
+﻿@model Student_Performance_Management_System.ViewModel.StaffDashViewModel;
 @{
     Layout = "_StaffLayout";
 }
@@ -65,32 +65,68 @@
                             </td>
                             <td class="text-center">
                                 <div class="btn-group gap-2">
-                                    @if (item.Status != Status.Pending)
+                            <td class="text-center">
+                                <div class="btn-group gap-2">
+
+                                    @if (item.Status == Status.Pending)
                                     {
-                                        <button class="btn btn-sm btn-light rounded-pill px-3 border" disabled>
+                                        <a href="/Staff/AddMark/@item.TasksId"
+                                           class="btn btn-sm btn-primary rounded-pill px-3">
+                                            Add Marks
+                                        </a>
+                                    }
+
+                                    else if (item.Status == Status.Overdue)
+                                    {
+                                        <a asp-action="SendLateRequest"
+                                           asp-route-id="@item.TasksId"
+                                           class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                            Request Extension
+                                        </a>
+                                    }
+
+                                    else if (item.Status == Status.LateRequested)
+                                    {
+                                        <span class="badge bg-warning rounded-pill px-3 py-2">
+                                            <i class="bi bi-hourglass-split me-1"></i> Requested
+                                        </span>
+
+                                        <button class="btn btn-sm btn-light rounded-pill px-3" disabled>
                                             <i class="bi bi-lock-fill"></i> Locked
                                         </button>
-                                        <a href="#" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
-                                            <i class="bi bi-envelope"></i> Request
-                                        </a>
-
-                                       
                                     }
-                                    else
+
+                                    else if (item.Status == Status.LateRejected)
                                     {
+                                        <span class="badge bg-danger rounded-pill px-3 py-2">
+                                            <i class="bi bi-x-circle me-1"></i> Rejected
+                                        </span>
 
-                                        <a href="/Staff/AddMark/@item.TasksId" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
-                                            <i class="bi bi-plus-lg"></i> Add Marks
-                                        </a>
-                                   
+                                        <button class="btn btn-sm btn-light rounded-pill px-3" disabled>
+                                            <i class="bi bi-lock-fill"></i> Locked
+                                        </button>
                                     }
-                                 
+
+                                    else if (item.Status == Status.Completed)
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Completed
+                                        </span>
+
+                                        <button class="btn btn-sm btn-light rounded-pill px-3" disabled>
+                                            <i class="bi bi-lock-fill"></i> Locked
+                                        </button>
+                                    }
                                 </div>
                             </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+
+
+            </div>
+            </td>
+            </tr>
+        }
+        </tbody>
+        </table>
     </div>
+</div>
 </div>
