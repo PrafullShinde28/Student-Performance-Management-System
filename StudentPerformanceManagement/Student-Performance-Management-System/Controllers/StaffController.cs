@@ -30,7 +30,8 @@ namespace Student_Performance_Management_System.Controllers
             UpdateOverdueTasks();
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
-
+            var staff = await _context.Staffs
+                        .FirstOrDefaultAsync(s => s.AppUserId == userId);
             var myTasks = await _context.Tasks
                 .Include(t => t.Course)
                 .Include(t => t.Subject)
@@ -42,10 +43,13 @@ namespace Student_Performance_Management_System.Controllers
             {
 
                 // StaffDashViewModel properties
-                StaffId = userId,
-                StaffName = user?.UserName,
+                StaffId = staff.StaffId,
+                StaffName = staff.Name,
                 TaskCount = myTasks.Count,
-                Tasks = myTasks
+                Tasks = myTasks,
+                Profile = staff.ProfileImage,
+                Email = staff.Email,
+                MobileNo = staff.MobileNo
             };
 
             return View("MyTasks", vm);  // ya sirf return View(vm);
@@ -66,13 +70,14 @@ namespace Student_Performance_Management_System.Controllers
 
             var vm = new StaffDashViewModel
             {
-
                 // StaffDashViewModel properties
-                StaffId = userId,
-                StaffName = user?.UserName,
+                StaffId = staff.StaffId,
+                StaffName = staff.Name,
                 TaskCount = myTasks.Count,
                 Tasks = myTasks,
-                Profile = staff.ProfileImage
+                Profile = staff.ProfileImage,
+                Email = staff.Email,
+                MobileNo = staff.MobileNo
             };
             return View("Dashboard", vm);   // YAHAN StaffDashViewModel hi return karo
         }
@@ -240,6 +245,63 @@ namespace Student_Performance_Management_System.Controllers
             return RedirectToAction("MyTasks");
         }
 
+        [HttpGet]
+        public IActionResult EditProfile(int id)
+        {
+            var staff =  _context.Staffs.Where(s => s.StaffId == id).FirstOrDefault();
+            var vm = new EditStaff
+            {
+                // StaffDashViewModel properties
+                StaffId = id,
+                StaffName = staff.Name,
+                Email = staff.Email,
+                ProfileImage = staff.ProfileImage,
+                MobileNo = staff.MobileNo,
+            };
 
+            return View(vm);
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> EditProfile(EditStaffVM sm)
+        {
+            if (!ModelState.IsValid)
+                return View(sm);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var staff = _context.Staffs.Where(s => s.AppUserId == userId).FirstOrDefault();
+            staff.Email = sm.Email;
+            staff.MobileNo = sm.MobileNo;
+            staff.Name = sm.StaffName;
+            staff.ProfileImage = await SaveProfileImageAsync(sm.ProfileImage);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Dashboard");
+        }
+
+
+
+        private async Task<string> SaveProfileImageAsync(IFormFile? profileImage)
+        {
+            if (profileImage == null || profileImage.Length == 0)
+                return string.Empty;
+
+            // Generate unique file name
+            var fileName = $"{Guid.NewGuid()}_{profileImage.FileName}";
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+
+            // Ensure uploads folder exists
+            Directory.CreateDirectory(Path.GetDirectoryName(uploadPath)!);
+
+            // Save file
+            using (var stream = new FileStream(uploadPath, FileMode.Create))
+            {
+                await profileImage.CopyToAsync(stream);
+            }
+
+            // Return relative path to store in DB
+            return $"/uploads/{fileName}";
+
+        }
     }
 }
