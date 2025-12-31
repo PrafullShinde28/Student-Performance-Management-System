@@ -1,7 +1,9 @@
 ﻿@using System.Linq;
 @using Student_Performance_Management_System.ViewModel;
 @model List<Student_Performance_Management_System.ViewModel.MarkViewModel>
-
+@{
+    Layout = "_StaffLayout";
+}
 @{
     // Safely extract the first item to use for the TaskId in the footer
     var firstStudent = Model?.FirstOrDefault();

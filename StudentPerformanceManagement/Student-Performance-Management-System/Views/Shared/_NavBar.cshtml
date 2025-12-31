@@ -28,6 +28,17 @@
             margin-left: 200px; 
         }
 
+        
+        .brand-icon {
+            font-size: 1.5rem; 
+            margin-right: 10px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .brand-text {
+            font-size: 1.5rem; 
+            letter-spacing: 1px;
+        }
 
     </style>
 </head>
@@ -37,15 +48,18 @@
     <!-- ================= NAVBAR ================= -->
     <nav class="navbar navbar-expand navbar-light bg-white fixed-top border-bottom shadow-sm">
         <div class="container-fluid">
-            <span class="navbar-brand fw-bold d-flex align-items-center">
-                <i class="bi bi-speedometer2 brand-icon"></i>
-                <span class="brand-text"> SMPS</span>
+            <span class="navbar-brand fw-bold d-flex align-items-center brand-wrap">
+                <i class="bi bi-speedometer2 brand-icon text-danger"></i>
+                <span class="brand-text">SMPS</span>
             </span>
 
+
+
             <div class="d-flex align-items-center admin-info">
-                <i class="bi bi-person-circle fs-4 me-2"></i>
-                <span class="fw-semibold">Admin</span>
+                <i class="bi bi-person-circle fs-2 me-2"></i>
+                <span class="fw-semibold fs-5 me-4">Admin</span>
             </div>
+
 
         </div>
         

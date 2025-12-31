@@ -17,13 +17,70 @@ namespace Student_Performance_Management_System.Controllers
 
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public StaffController(UserManager<AppUser> userManager,
+        public StaffController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
         ApplicationDbContext context)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
             _context = context;
         }
+       
+
+        // CHANGE PASSWORD (GET)
+        public IActionResult ChangePassword()
+        {
+            return View(new StaffChangePasswordViewModel());
+        }
+
+        // CHANGE PASSWORD (POST)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdatePassword(StaffChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View("ChangePassword", model);
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login", "Account");
+
+            var result = await _userManager.ChangePasswordAsync(
+                user,
+                model.CurrentPassword,
+                model.NewPassword
+            );
+
+            if (result.Succeeded)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+                TempData["Success"] = "Password updated successfully!";
+                return RedirectToAction("Dashboard");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                if (error.Code.Contains("PasswordMismatch"))
+                {
+                    ModelState.AddModelError(
+                        "CurrentPassword",
+                        "The current password you entered is incorrect."
+                    );
+                }
+                else
+                {
+                    ModelState.AddModelError(
+                        "NewPassword",
+                        error.Description
+                    );
+                }
+            }
+
+            return View("ChangePassword", model);
+        }
+
+
 
         public async Task<IActionResult> MyTasks()
         {
@@ -246,22 +303,29 @@ namespace Student_Performance_Management_System.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditProfile(int id)
+        public IActionResult EditProfile()
         {
-            var staff =  _context.Staffs.Where(s => s.StaffId == id).FirstOrDefault();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var staff = _context.Staffs
+                .FirstOrDefault(s => s.AppUserId == userId);
+
+            if (staff == null)
+                return RedirectToAction("Login", "Account");
+
             var vm = new EditStaff
             {
-                // StaffDashViewModel properties
-                StaffId = id,
+                StaffId = staff.StaffId,
                 StaffName = staff.Name,
                 Email = staff.Email,
                 ProfileImage = staff.ProfileImage,
-                MobileNo = staff.MobileNo,
+                MobileNo = staff.MobileNo
             };
 
             return View(vm);
         }
-        
+
+
         [HttpPost]
         public async Task<IActionResult> EditProfile(EditStaffVM sm)
         {
