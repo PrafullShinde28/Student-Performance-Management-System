@@ -1,18 +1,31 @@
-﻿@model Student_Performance_Management_System.ViewModel.StaffDashViewModel;
+﻿@model Student_Performance_Management_System.ViewModel.StaffDashViewModel
 @{
     Layout = "_StaffLayout";
 }
 
 <div class="container-fluid py-4">
-    <!-- Header Section -->
+
+    <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="fw-bold text-dark mb-1">My Assigned Tasks</h2>
-            <p class="text-muted small">Status Overview for Academic Session @DateTime.Now.Year</p>
+            <p class="text-muted small">
+                Status Overview for Academic Session @DateTime.Now.Year
+            </p>
+        </div>
+
+        <!-- Back Button (Top Right) -->
+        <div>
+            <a asp-controller="Staff"
+               asp-action="Dashboard"
+               class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-arrow-left me-1"></i> Back
+            </a>
         </div>
     </div>
 
-    <!-- Tasks Table Card -->
+
+    <!-- Tasks Table -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -21,52 +34,81 @@
                         <th class="ps-4 py-3">Course & Subject</th>
                         <th>Group</th>
                         <th>Timeline</th>
-                        <th>Task Status</th> @* Status Column *@
+                        <th>Task Status</th>
                         <th class="text-center">Actions</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach (var item in Model.Tasks)
                     {
                         <tr>
+                            <!-- Course & Subject -->
                             <td class="ps-4">
-                                <div class="fw-bold text-primary">@item.Course.CourseName</div>
-                                <div class="small text-muted">@item.Subject.SubjectName</div>
+                                <div class="fw-bold text-primary">
+                                    @item.Course.CourseName
+                                </div>
+                                <div class="small text-muted">
+                                    @item.Subject.SubjectName
+                                </div>
                             </td>
+
+                            <!-- Group -->
                             <td>
                                 <span class="badge bg-light text-dark border px-3">
                                     @item.CourseGroup.GroupName
                                 </span>
                             </td>
+
+                            <!-- Timeline -->
                             <td>
-                                <div class="small fw-bold text-dark">Due: @item.ValidTo.ToString("dd MMM yyyy")</div>
-                                <div class="text-muted small">From: @item.ValidFrom.ToString("dd MMM")</div>
+                                <div class="small fw-bold text-dark">
+                                    Due: @item.ValidTo.ToString("dd MMM yyyy")
+                                </div>
+                                <div class="text-muted small">
+                                    From: @item.ValidFrom.ToString("dd MMM")
+                                </div>
                             </td>
+
+                            <!-- Status -->
                             <td>
-                                @* --- Enum Status Logic (0=Pending, 1=Completed, 2=Overdue) --- *@
                                 @switch (item.Status)
                                 {
                                     case Status.Pending:
-                                        <span class="badge rounded-pill bg-warning-subtle text-warning border border-warning-subtle px-3 py-2">
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning border px-3 py-2">
                                             <i class="bi bi-clock-history me-1"></i> Pending
                                         </span>
                                         break;
+
                                     case Status.Completed:
-                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                                        <span class="badge rounded-pill bg-success-subtle text-success border px-3 py-2">
                                             <i class="bi bi-check-circle-fill me-1"></i> Completed
                                         </span>
                                         break;
+
                                     case Status.Overdue:
-                                        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger border px-3 py-2">
                                             <i class="bi bi-exclamation-triangle-fill me-1"></i> Overdue
+                                        </span>
+                                        break;
+
+                                    case Status.LateRequested:
+                                        <span class="badge bg-warning rounded-pill px-3 py-2">
+                                            <i class="bi bi-hourglass-split me-1"></i> Requested
+                                        </span>
+                                        break;
+
+                                    case Status.LateRejected:
+                                        <span class="badge bg-danger rounded-pill px-3 py-2">
+                                            <i class="bi bi-x-circle me-1"></i> Rejected
                                         </span>
                                         break;
                                 }
                             </td>
+
+                            <!-- Actions (LOGIC UNCHANGED) -->
                             <td class="text-center">
-                                <div class="btn-group gap-2">
-                            <td class="text-center">
-                                <div class="btn-group gap-2">
+                                <div class="d-flex justify-content-center gap-2">
 
                                     @if (item.Status == Status.Pending)
                                     {
@@ -75,7 +117,6 @@
                                             Add Marks
                                         </a>
                                     }
-
                                     else if (item.Status == Status.Overdue)
                                     {
                                         <a asp-action="SendLateRequest"
@@ -84,24 +125,14 @@
                                             Request Extension
                                         </a>
                                     }
-
                                     else if (item.Status == Status.LateRequested)
                                     {
-                                        <span class="badge bg-warning rounded-pill px-3 py-2">
-                                            <i class="bi bi-hourglass-split me-1"></i> Requested
-                                        </span>
-
                                         <button class="btn btn-sm btn-light rounded-pill px-3" disabled>
                                             <i class="bi bi-lock-fill"></i> Locked
                                         </button>
                                     }
-
                                     else if (item.Status == Status.LateRejected)
                                     {
-                                        <span class="badge bg-danger rounded-pill px-3 py-2">
-                                            <i class="bi bi-x-circle me-1"></i> Rejected
-                                        </span>
-
                                         <button class="btn btn-sm btn-light rounded-pill px-3" disabled>
                                             <i class="bi bi-lock-fill"></i> Locked
                                         </button>
@@ -117,16 +148,16 @@
                                             <i class="bi bi-lock-fill"></i> Locked
                                         </button>
                                     }
+
                                 </div>
                             </td>
+                        </tr>
+                    }
+                </tbody>
 
-
-            </div>
-            </td>
-            </tr>
-        }
-        </tbody>
-        </table>
+            </table>
+        </div>
     </div>
 </div>
-</div>
+
+
