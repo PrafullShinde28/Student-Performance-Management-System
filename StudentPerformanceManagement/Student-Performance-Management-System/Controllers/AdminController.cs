@@ -332,20 +332,20 @@ namespace Student_Performance_Management_System.Controllers
         // ADD STAFF (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddStaff(string name, string email, string mobileNo, IFormFile ProfileImage)
+        public async Task<IActionResult> AddStaff(AddStaff s)
         {
             var tempPassword = "Temp@123";
 
             var user = new AppUser
             {
-                UserName = email,
-                Email = email,
-                FullName = name,
+                UserName = s.Email,
+                Email = s.Email,
+                FullName = s.Name,
                 EmailConfirmed = true
             };
 
             var result = await _userManager.CreateAsync(user, tempPassword);
-            string profileImagePath = await SaveProfileImageAsync(ProfileImage);
+            string profileImagePath = await SaveProfileImageAsync(s.ProfileImage);
 
             if (!result.Succeeded)
             {
@@ -357,9 +357,9 @@ namespace Student_Performance_Management_System.Controllers
 
             var staff = new Staff
             {
-                Name = name,
-                Email = email,
-                MobileNo = mobileNo,
+                Name = s.Name,
+                Email = s.Email,
+                MobileNo = s.MobileNo,
                 AppUserId = user.Id,
                 ProfileImage = profileImagePath
 
