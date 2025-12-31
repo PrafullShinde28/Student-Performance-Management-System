@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Student_Performance_Management_System;
 
@@ -11,9 +12,11 @@ using Student_Performance_Management_System;
 namespace Student_Performance_Management_System.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251231073539_course-related")]
+    partial class courserelated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -482,8 +485,7 @@ namespace Student_Performance_Management_System.Migrations
 
                     b.HasIndex("StaffId");
 
-                    b.HasIndex("SubjectId", "CourseGroupId")
-                        .IsUnique();
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("Tasks");
                 });

@@ -6,15 +6,25 @@
 }
 
 <div class="container-fluid">
+
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-semibold text-primary">
+            <i class="bi bi-person-plus"></i> Enroll Student
+        </h4>
+
+        <a asp-action="Students" asp-controller="Admin" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- FORM CARD -->
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
 
-            <div class="card shadow-sm">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0 fw-semibold">Enroll Student</h5>
-                </div>
+            <div class="card shadow-sm rounded-4">
+                <div class="card-body p-4">
 
-                <div class="card-body">
                     <form asp-action="EnrollStudent" method="post" enctype="multipart/form-data">
 
                         <!-- NAME -->
@@ -60,15 +70,15 @@
                             </select>
                             <span asp-validation-for="CourseGroupId" class="text-danger small"></span>
                         </div>
-                        <div class="form-group mb-3">
+
+                        <!-- PROFILE IMAGE -->
+                        <div class="mb-3">
                             <label asp-for="ProfileImage" class="form-label"></label>
                             <input asp-for="ProfileImage" type="file" class="form-control" />
-                            <span asp-validation-for="ProfileImage" class="text-danger"></span>
+                            <span asp-validation-for="ProfileImage" class="text-danger small"></span>
                         </div>
-                        @* <div class="alert alert-secondary small">
-                            Default Password: <strong>Student@123</strong>
-                        </div> *@
 
+                        <!-- SUBMIT -->
                         <div class="d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-person-plus"></i> Enroll
@@ -76,10 +86,12 @@
                         </div>
 
                     </form>
+
                     @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                     {
-                        <p style="color:red">@error.ErrorMessage</p>
+                        <p class="text-danger small">@error.ErrorMessage</p>
                     }
+
                 </div>
             </div>
 

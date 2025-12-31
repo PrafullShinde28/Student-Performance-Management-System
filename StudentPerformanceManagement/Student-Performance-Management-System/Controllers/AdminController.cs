@@ -992,6 +992,18 @@ namespace Student_Performance_Management_System.Controllers
                 return RedirectToAction("AddTask");
             }
 
+           
+            bool exists = _db.Tasks.Any(t =>
+                t.SubjectId == model.SubjectId &&
+                t.CourseGroupId == model.CourseGroupId
+            );
+
+            if (exists)
+            {
+                TempData["Error"] = "Task already exists for this Subject and Course Group.";
+                return RedirectToAction("Tasks");
+            }
+
             var task = new Tasks
             {
                 Title = model.Title,
@@ -1011,6 +1023,7 @@ namespace Student_Performance_Management_System.Controllers
             TempData["Success"] = "Task added successfully.";
             return RedirectToAction("Tasks");
         }
+
 
         [HttpGet]
         public IActionResult GetSubjectsByCourse(int courseId)
@@ -1097,6 +1110,19 @@ namespace Student_Performance_Management_System.Controllers
                 return RedirectToAction("Tasks");
             }
 
+            
+            bool exists = _db.Tasks.Any(t =>
+                t.SubjectId == model.SubjectId &&
+                t.CourseGroupId == model.CourseGroupId &&
+                t.TasksId != model.Id
+            );
+
+            if (exists)
+            {
+                TempData["Error"] = "Another task already exists for this Subject and Course Group.";
+                return RedirectToAction("Tasks", new { id = model.Id });
+            }
+
             task.Title = model.Title;
             task.Description = model.Description;
             task.CourseId = model.CourseId;
@@ -1114,23 +1140,23 @@ namespace Student_Performance_Management_System.Controllers
 
 
 
-       [HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult DeleteTask(int id)
-{
-    var task = _db.Tasks.Find(id);
-    if (task == null)
-    {
-        TempData["Error"] = "Task not found.";
-        return RedirectToAction("Tasks");
-    }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteTask(int id)
+        {
+            var task = _db.Tasks.Find(id);
+            if (task == null)
+            {
+                TempData["Error"] = "Task not found.";
+                return RedirectToAction("Tasks");
+            }
 
-    _db.Tasks.Remove(task);
-    _db.SaveChanges();
+            _db.Tasks.Remove(task);
+            _db.SaveChanges();
 
-    TempData["Success"] = "Task deleted successfully.";
-    return RedirectToAction("Tasks");
-}
+            TempData["Success"] = "Task deleted successfully.";
+            return RedirectToAction("Tasks");
+        }
 
 
         #endregion
