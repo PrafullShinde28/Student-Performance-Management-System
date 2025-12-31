@@ -13,6 +13,7 @@
         .ThenBy(t => t.ValidTo) // Jinki deadline paas hai wo upar
         .Take(6)
         .ToList();
+
     Layout = "_StaffLayout";
 }
 
@@ -119,25 +120,62 @@
                                 </div>
                             </td>
                             <td class="text-center">
-                                @if (task.Status != Status.Pending)
+                            <td class="text-center">
+                                <div class="btn-group gap-2">
+
+                                    @if (task.Status == Status.Pending)
                                     {
-                                        <button class="btn btn-sm btn-light rounded-pill px-3 border" disabled>
+                                        <a href="/Staff/AddMark/@task.TasksId"
+                                           class="btn btn-sm btn-primary rounded-pill px-3">
+                                            Add Marks
+                                        </a>
+                                    }
+
+                                    else if (task.Status == Status.Overdue)
+                                    {
+                                        <a asp-action="SendLateRequest"
+                                           asp-route-id="@task.TasksId"
+                                           class="btn btn-sm btn-outline-danger rounded-pill px-3">
+                                            Request Extension
+                                        </a>
+                                    }
+
+                                    else if (task.Status == Status.LateRequested)
+                                    {
+                                        <span class="badge bg-warning rounded-pill px-3 py-2">
+                                            <i class="bi bi-hourglass-split me-1"></i> Requested
+                                        </span>
+
+                                        <button class="btn btn-sm btn-light rounded-pill px-3" disabled>
                                             <i class="bi bi-lock-fill"></i> Locked
                                         </button>
-                                        <a href="#" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
-                                            <i class="bi bi-envelope"></i> Request
-                                        </a>
-
-                                       
                                     }
-                                    else
+
+                                    else if (task.Status == Status.LateRejected)
                                     {
+                                        <span class="badge bg-danger rounded-pill px-3 py-2">
+                                            <i class="bi bi-x-circle me-1"></i> Rejected
+                                        </span>
 
-                                        <a href="/Staff/AddMark/@task.TasksId" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
-                                            <i class="bi bi-plus-lg"></i> Add Marks
-                                        </a>
-                                   
+                                        <button class="btn btn-sm btn-light rounded-pill px-3" disabled>
+                                            <i class="bi bi-lock-fill"></i> Locked
+                                        </button>
                                     }
+
+                                    else if (task.Status == Status.Completed)
+                                    {
+                                        <span class="badge bg-success rounded-pill px-3 py-2">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Completed
+                                        </span>
+
+                                        <button class="btn btn-sm btn-light rounded-pill px-3" disabled>
+                                            <i class="bi bi-lock-fill"></i> Locked
+                                        </button>
+                                    }
+                                </div>
+                            </td>
+
+
                             </td>
                         </tr>
                     }
