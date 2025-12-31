@@ -6,7 +6,7 @@
         public string CourseName { get; set; }
 
         public string Description { get; set; }
-        public string Duration { get; set; }
+        public int Duration { get; set; }
         public decimal Fees { get; set; }
 
         public ICollection<Student> Students { get; set; } = new List<Student>();
