@@ -889,16 +889,43 @@ namespace Student_Performance_Management_System.Controllers
         #endregion
 
         #region tasks
-        public IActionResult Tasks()
+        public IActionResult Tasks(int? staffId, Status? status)
         {
-            var tasks = _db.Tasks
-                .Include(t => t.Course)
-                .Include(t => t.Subject)
-                .Include(t => t.CourseGroup)
+            var query = _context.Tasks
                 .Include(t => t.Staff)
-                .ToList();
+                .Include(t => t.Course)
+                .Include(t => t.CourseGroup)
+                .Include(t => t.Subject)
+                .AsQueryable();
 
-            return View(tasks);
+            if (staffId.HasValue)
+                query = query.Where(t => t.StaffId == staffId);
+
+            if (status.HasValue)
+                query = query.Where(t => t.Status == status);
+
+            var vm = new TaskFilterVM
+            {
+                StaffId = staffId,
+                Status = status,
+                Tasks = query.ToList(),
+
+                StaffList = _context.Staffs.Select(s => new SelectListItem
+                {
+                    Text = s.Name,
+                    Value = s.StaffId.ToString()
+                }).ToList(),
+
+                StatusList = Enum.GetValues(typeof(Status))
+                    .Cast<Status>()
+                    .Select(s => new SelectListItem
+                    {
+                        Text = s.ToString(),
+                        Value = ((int)s).ToString()
+                    }).ToList()
+            };
+
+            return View(vm);
         }
 
         private void UpdateOverdueTasks()
